@@ -1,6 +1,7 @@
 package {
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import tests.ProjectileMotionExperiment;
 	
 	public class Main extends Sprite {
 		
@@ -11,6 +12,12 @@ package {
 		
 		private function init(e:Event = null):void {
 			super.removeEventListener(Event.ADDED_TO_STAGE, this.init);
+			
+			this.runProjectileMotionExperiment();
+		}
+		
+		private function runProjectileMotionExperiment():void {
+			super.addChild(new ProjectileMotionExperiment(super.stage));
 		}
 	}
 }
