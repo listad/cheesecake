@@ -19,5 +19,8 @@ package {
 		private function runProjectileMotionExperiment():void {
 			super.addChild(new ProjectileMotionExperiment(super.stage));
 		}
+		private function mikafunction():void {
+			// Some comment here.
+		}
 	}
 }
