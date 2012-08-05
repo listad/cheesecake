@@ -50,35 +50,35 @@ package engine.physics {
 		// Internal
 		
 		internal function physicsUpdate(dt:Number):void {
-			var tempState:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
-			var originState:Vector.<Number> = state;
+			var temp:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
+			var origin:Vector.<Number> = state;
+			var i:int;
 			
-			var i:int = -1;
 			define(k1);
-			while ( ++i < 6 ) tempState[ i ] = originState[ i ] + k1[ i ] * dt * 0.5;
+			for (i = 0; i < 6; i++) temp[i] = origin[i] + k1[i] * dt * 0.5;
 			
-			i = -1;
-			state = tempState;
-			define( k2 );
-			while( ++i < 6 ) tempState[ i ] = originState[ i ] + k2[ i ] * dt * 0.5;
+			state = temp;
+			define(k2);
+			for (i = 0; i < 6; i++) temp[i] = origin[i] + k2[i] * dt * 0.5;
 			
-			i = -1;
-			state = tempState;
-			define( k3 );
-			while( ++i < 6 ) tempState[ i ] = originState[ i ] + k3[ i ] * dt;
+			state = temp;
+			define(k3);
+			for (i = 0; i < 6; i++) temp[i] = origin[i] + k3[i] * dt;
 			
-			i = -1;
-			state = tempState;
-			define( k4 );
-			while( ++i < 6 ) originState[ i ] += dt * ( k1[ i ] + 2 * k2[ i ] + 2 * k3[ i ] + k4[ i ] ) / 6;
+			state = temp;
+			define(k4);
+			for (i = 0; i < 6; i++) origin[i] += dt * (k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i]) / 6.0;
 			
-			state = originState;
+			state = origin;
 		}
 		
 		public function get xPosition():Number { return this._state[POSITION_X_INDEX]; }
 		public function set xPosition(value:Number):void { this._state[POSITION_X_INDEX] = value; }
 		public function get yPosition():Number { return this._state[POSITION_Y_INDEX]; }
 		public function set yPosition(value:Number):void { this._state[POSITION_Y_INDEX] = value; }
+		
+		public function get mass():Number { return this._mass; }
+		public function set mass(value:Number):void { this._mass = value; }
 		
 		// Private
 		
