@@ -27,6 +27,7 @@ package engine.physics {
 		// Private
 		
 		private var _state:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
+		private var _forces:Vector.<Force> = new Vector.<Force>;
 		private var _force:Vector2D = new Vector2D();
 		private var _mass:Number = 1.0;
 		private var _torque:Number = 0.0;
@@ -37,7 +38,7 @@ package engine.physics {
 		private var k3:Vector.<Number> = new Vector.<Number>(6);
 		private var k4:Vector.<Number> = new Vector.<Number>(6);
 		
-		public function RigidBody() {
+		public function RigidBody(x:Number, y:Number, angle:Number, mass:Number = 1.0, collisionMesh) {
 			super.addEventListener(Event.ENTER_FRAME, this.enterFrameEventListener);//DEBUG!!!
 		}
 		
@@ -50,35 +51,31 @@ package engine.physics {
 		// Internal
 		
 		internal function physicsUpdate(dt:Number):void {
-			var tempState:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
-			var originState:Vector.<Number> = state;
+			var temp:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
+			var origin:Vector.<Number> = state;
+			var i:int;
 			
-			var i:int = -1;
 			define(k1);
-			while ( ++i < 6 ) tempState[ i ] = originState[ i ] + k1[ i ] * dt * 0.5;
-			
-			i = -1;
-			state = tempState;
-			define( k2 );
-			while( ++i < 6 ) tempState[ i ] = originState[ i ] + k2[ i ] * dt * 0.5;
-			
-			i = -1;
-			state = tempState;
-			define( k3 );
-			while( ++i < 6 ) tempState[ i ] = originState[ i ] + k3[ i ] * dt;
-			
-			i = -1;
-			state = tempState;
-			define( k4 );
-			while( ++i < 6 ) originState[ i ] += dt * ( k1[ i ] + 2 * k2[ i ] + 2 * k3[ i ] + k4[ i ] ) / 6;
-			
-			state = originState;
+			for (i = 0; i < 6; i++) temp[i] = origin[i] + k1[i] * dt * 0.5;
+			state = temp;
+			define(k2);
+			for (i = 0; i < 6; i++) temp[i] = origin[i] + k2[i] * dt * 0.5;
+			state = temp;
+			define(k3);
+			for (i = 0; i < 6; i++) temp[i] = origin[i] + k3[i] * dt;
+			state = temp;
+			define(k4);
+			for (i = 0; i < 6; i++) origin[i] += dt * (k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i]) / 6.0;
+			state = origin;
 		}
 		
 		public function get xPosition():Number { return this._state[POSITION_X_INDEX]; }
 		public function set xPosition(value:Number):void { this._state[POSITION_X_INDEX] = value; }
 		public function get yPosition():Number { return this._state[POSITION_Y_INDEX]; }
 		public function set yPosition(value:Number):void { this._state[POSITION_Y_INDEX] = value; }
+		
+		public function get mass():Number { return this._mass; }
+		public function set mass(value:Number):void { this._mass = value; }
 		
 		// Private
 		
