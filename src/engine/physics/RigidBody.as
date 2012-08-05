@@ -27,6 +27,7 @@ package engine.physics {
 		// Private
 		
 		private var _state:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
+		private var _forces:Vector.<Force> = new Vector.<Force>;
 		private var _force:Vector2D = new Vector2D();
 		private var _mass:Number = 1.0;
 		private var _torque:Number = 0.0;
@@ -37,7 +38,7 @@ package engine.physics {
 		private var k3:Vector.<Number> = new Vector.<Number>(6);
 		private var k4:Vector.<Number> = new Vector.<Number>(6);
 		
-		public function RigidBody() {
+		public function RigidBody(x:Number, y:Number, angle:Number, mass:Number = 1.0, collisionMesh) {
 			super.addEventListener(Event.ENTER_FRAME, this.enterFrameEventListener);//DEBUG!!!
 		}
 		
@@ -56,19 +57,15 @@ package engine.physics {
 			
 			define(k1);
 			for (i = 0; i < 6; i++) temp[i] = origin[i] + k1[i] * dt * 0.5;
-			
 			state = temp;
 			define(k2);
 			for (i = 0; i < 6; i++) temp[i] = origin[i] + k2[i] * dt * 0.5;
-			
 			state = temp;
 			define(k3);
 			for (i = 0; i < 6; i++) temp[i] = origin[i] + k3[i] * dt;
-			
 			state = temp;
 			define(k4);
 			for (i = 0; i < 6; i++) origin[i] += dt * (k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i]) / 6.0;
-			
 			state = origin;
 		}
 		
