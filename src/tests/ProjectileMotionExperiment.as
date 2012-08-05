@@ -1,5 +1,7 @@
 package tests {
+	import engine.geometry.Polygon;
 	import engine.geometry.Vector2D;
+	import engine.physics.Gravity;
 	import engine.physics.PhysicsSandbox;
 	import engine.physics.RigidBody;
 	import flash.display.Sprite;
@@ -16,10 +18,11 @@ package tests {
 			var sandbox:PhysicsSandbox = new PhysicsSandbox();
 			super.addChild(sandbox);
 			
-			this._rigidBody = new RigidBody();
+			this._rigidBody = new RigidBody(350, 250, 0, 1, Polygon.rect(50, 50) );
 			sandbox.addRigidBody(this._rigidBody);
 			
-			//this._rigidBody.addForce(new Vector2D(10, 10));
+			this._rigidBody.addForce(new Gravity(29.8));
+			//this._rigidBody.addImpulse(new Vector2D(350, 0));
 			
 			sandbox.run();
 			
@@ -27,9 +30,9 @@ package tests {
 		}
 		
 		private function enterFrameEventListener(event:Event):void {
-			if (this._rigidBody.yPosition > 500) {
-				trace( new Date().time - this._startTime );
-			}
+			//if (this._rigidBody.yPosition > 500) {
+				//trace( _rigidBody.yVelocity );
+			//}
 		}
 	}
 }

@@ -7,7 +7,7 @@ package engine.physics {
 		// Const
 		
 		// Var
-		private var _iterations:int = 1;
+		private var _iterations:int = 4;
 		
 		private var _dynamicBodies:Vector.<RigidBody> = new Vector.<RigidBody>();
 		private var _staticBodies:Vector.<RigidBody> = new Vector.<RigidBody>();
@@ -32,6 +32,7 @@ package engine.physics {
 		}
 		
 		public function addRigidBody(rigidBody:RigidBody):void {
+			rigidBody.debugGraphics = super.graphics;//DEBUG!!!
 			if (rigidBody.mass == Infinity) {
 				this._staticBodies.push(rigidBody);
 			} else {
