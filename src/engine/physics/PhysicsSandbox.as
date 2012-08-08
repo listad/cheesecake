@@ -1,4 +1,4 @@
-package engine.physics {
+﻿package engine.physics {
 	import engine.util.Time;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -17,7 +17,7 @@ package engine.physics {
 		// Constructor
 		
 		public function PhysicsSandbox() {
-			
+			super.mouseEnabled = false;
 		}
 		
 		// Public
@@ -32,7 +32,6 @@ package engine.physics {
 		}
 		
 		public function addRigidBody(rigidBody:RigidBody):void {
-			rigidBody.debugGraphics = super.graphics;//DEBUG!!!
 			if (rigidBody.mass == Infinity) {
 				this._staticBodies.push(rigidBody);
 			} else {
@@ -59,14 +58,48 @@ package engine.physics {
 			var dt:Number = Time.time - this._lastUpdate;
 			this._lastUpdate = Time.time;
 			
+			trace("frameRate: ", Math.round(1 / dt) );
+			
+			var dynamicsNum:int = this._dynamicBodies.length;
+			var staticsNum:int = this._staticBodies.length;
+			
 			var ddt:Number = dt / this._iterations;
 			for (var i:int = 0; i < this._iterations; i++) {
-				var length:int = this._dynamicBodies.length;
-				for (var j:int = 0; j < length; j++) {
+				//physics update
+				
+				for (var j:int = 0; j < dynamicsNum; j++) {
 					var rigidBody:RigidBody = this._dynamicBodies[j];
 					rigidBody.physicsUpdate(ddt);
 				}
+				//collisions
+				for (j = 0; j < dynamicsNum; j++) {
+					//other dynamics
+					for (var q:int = j + 1; q < dynamicsNum; q++) {
+					
+					}
+					//all statics
+					for (var q:int = 0; q < staticsNum; q++) {
+					
+					}
+					
+				}
+				//
 			}
+			
+			//draw debug layer
+			super.graphics.clear();
+			for (j = 0; j < dynamicsNum; j++) {
+					rigidBody = this._dynamicBodies[j];
+					rigidBody.debug(super.graphics);
+			}
+			for (j = 0; j < staticsNum; j++) {
+					rigidBody = this._staticBodies[j];
+					rigidBody.debug(super.graphics);
+			}
+			
 		}
+		
+		//Debug
+		
 	}
 }

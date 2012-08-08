@@ -1,6 +1,7 @@
 package {
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import tests.CoarseCollisionExperiment;
 	import tests.ProjectileMotionExperiment;
 	
 	public class Main extends Sprite {
@@ -21,7 +22,7 @@ package {
 		}
 		
 		private function runProjectileMotionExperiment():void {
-			super.addChild(new ProjectileMotionExperiment(super.stage));
+			super.addChild(new CoarseCollisionExperiment(super.stage));
 		}
 	}
 }
