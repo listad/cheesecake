@@ -1,5 +1,7 @@
-package engine.physics {
+﻿package engine.physics {
+	import engine.geometry.Matrix2D;
 	import engine.geometry.Polygon;
+	import engine.geometry.Rectangle2D;
 	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -35,22 +37,24 @@ package engine.physics {
 		private var _force:Vector2D = new Vector2D(); //тёмная магия
 		private var _mass:Number = 1.0;
 		private var _torque:Number = 0.0;
-		private var _inertiaTensor:Number = 1.0;
+		private var _inertiaTensor:Number = 5000.0;
 		
-		private var k1:Vector.<Number> = new Vector.<Number>(6);
-		private var k2:Vector.<Number> = new Vector.<Number>(6);
-		private var k3:Vector.<Number> = new Vector.<Number>(6);
-		private var k4:Vector.<Number> = new Vector.<Number>(6);
+		private var _k1:Vector.<Number> = new Vector.<Number>(6);
+		private var _k2:Vector.<Number> = new Vector.<Number>(6);
+		private var _k3:Vector.<Number> = new Vector.<Number>(6);
+		private var _k4:Vector.<Number> = new Vector.<Number>(6);
 		
 		private var _collisionGeometry:Polygon;
+		private var _bounds:Rectangle2D = new Rectangle2D();
 		
-		//DEBUG!!!
-		public var debugGraphics:Graphics;
+		private var _matrix:Matrix2D = new Matrix2D();
 		
-		public function RigidBody(x:Number, y:Number, angle:Number, mass:Number = 1.0, collisionGeometry:Polygon = null) {
-			super.addEventListener(Event.ENTER_FRAME, this.enterFrameEventListener);//DEBUG!!!
+		public function RigidBody(x:Number, y:Number, angle:Number, mass:Number = 1.0, inertiaTensor:Number = 100000.0, collisionGeometry:Polygon = null) {
 			this.xPosition = x;
 			this.yPosition = y;
+			this.angle = angle; this._matrix.angle = this.angle;
+			this._mass = mass;
+			this._inertiaTensor = inertiaTensor;
 			this._collisionGeometry = collisionGeometry;
 		}
 		
@@ -61,15 +65,22 @@ package engine.physics {
 			this.xVelocity += impulse.x / this._mass;
 			this.yVelocity += impulse.y / this._mass;
 		}
-		
-		//addImpulseAtPoint
-		public function addImpulseAtPoint(impulse:Vector2D, point:Vector2D):void {
-			
-		}
-		
 		public function addTorque(value:Number):void {
 			this.angularVelocity += value / this._inertiaTensor;
 		}
+		//addImpulseAtPoint
+		public function addImpulseAtPoint(impulse:Vector2D, point:Vector2D):void {
+			this.addImpulse(impulse);
+			this.addTorque(point.normal.dot(impulse));
+		}
+		
+		
+		public function addForceAtPoint(impulse:Vector2D, point:Vector2D):void {
+			this.applyForce(impulse);
+			this.applyTorque(point.normal.dot(impulse));
+		}
+		
+		
 		
 		public function addForce(force:IForce):void {
 			//todo: if not exist
@@ -93,21 +104,21 @@ package engine.physics {
 			var origin:Vector.<Number> = state;
 			var i:int;
 			
-			define(k1);
-			for (i = 0; i < 6; i++) temp[i] = origin[i] + k1[i] * dt * 0.5;
-			state = temp;
-			define(k2);
-			for (i = 0; i < 6; i++) temp[i] = origin[i] + k2[i] * dt * 0.5;
-			state = temp;
-			define(k3);
-			for (i = 0; i < 6; i++) temp[i] = origin[i] + k3[i] * dt;
-			state = temp;
-			define(k4);
-			for (i = 0; i < 6; i++) origin[i] += dt * (k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i]) / 6.0;
-			state = origin;
-			trace(state[VELOCITY_Y_INDEX] , "  DY " , dt * (k1[1] + 2.0 * k2[1] + 2.0 * k3[1] + k4[1]) / 6.0);
+			this.define(this._k1);
+			this.state = temp;
+			for (i = 0; i < 6; i++) temp[i] = origin[i] + this._k1[i] * dt * 0.5;
+			this.define(this._k2);
+			for (i = 0; i < 6; i++) temp[i] = origin[i] + this._k2[i] * dt * 0.5;
+			this.define(this._k3);
+			for (i = 0; i < 6; i++) temp[i] = origin[i] + this._k3[i] * dt;
+			this.define(this._k4);
+			for (i = 0; i < 6; i++) origin[i] += dt * (this._k1[i] + 2.0 * this._k2[i] + 2.0 * this._k3[i] + this._k4[i]) / 6.0;
+			this.state = origin;
+			
+			this._matrix.angle = this.angle;
 		}
 		
+		public function get positon():Vector2D { return new Vector2D(this._state[POSITION_X_INDEX], this._state[POSITION_Y_INDEX]); }
 		
 		public function get xPosition():Number { return this._state[POSITION_X_INDEX]; }
 		public function set xPosition(value:Number):void { this._state[POSITION_X_INDEX] = value; }
@@ -127,7 +138,12 @@ package engine.physics {
 		
 		public function get mass():Number { return this._mass; }
 		public function set mass(value:Number):void { this._mass = value; }
+		public function get inertiaTensor():Number { return this._inertiaTensor; }
+		//TODO: set itertiaTensor
 		
+		public function get matrix():Matrix2D { return this._matrix; }
+		
+		public function get collisionGeometry():Polygon { return this._collisionGeometry; }
 		// Private
 		
 		private function get state():Vector.<Number> { return this._state; }
@@ -141,7 +157,7 @@ package engine.physics {
 			derivative[VELOCITY_Y_DERIVATIVE_INDEX]			= this._force.y / this._mass;
 			derivative[ANGLE_DERIVATIVE_INDEX]				= this._state[ANGULAR_VELOCITY_INDEX];
 			derivative[ANGULAR_VELOCITY_DERIVATIVE_INDEX]	= this._torque / this._inertiaTensor;
-			this.clear();
+			this.clearForces();
 		}
 		
 		private function accumulate():void {
@@ -150,54 +166,30 @@ package engine.physics {
 			}
 		}
 		
-		public function clear():void {//DEBUG;
+		public function clearForces():void {
 			this._force.setVector(0.0, 0.0);
 			this._torque = 0.0;
 		}
 		
-		//DEBUG!!!
-		
-		private function bound():void {
-			var minX:Number = x;
-			var maxX:Number = x;
-			var minY:Number = y;
-			var maxY:Number = y;
-			var matrix:Matrix = new Matrix();//TODO: написать свою матрицу
-			matrix.rotate(this.angle);
-			matrix.translate(x, y);
-			
-			for (var i:int = 0; i < this._collisionGeometry.vertices.length; i++) {
-				var vertex:Point = this._collisionGeometry.vertices[i].toPoint();
-				vertex = matrix.transformPoint(vertex);
-				if (vertex.x < minX) minX = vertex.x;
-				if (vertex.x > maxX) maxX = vertex.x;
-				if (vertex.y < minY) minY = vertex.y;
-				if (vertex.y > maxY) maxY = vertex.y;
-			}
-			
-			debugGraphics.clear();
-			debugGraphics.lineStyle(1.0, 0xCCAAAA, 0.5);
-			debugGraphics.drawRect(minX, minY, maxX - minX, maxY - minY);
-			
+		public function get bounds():Rectangle2D {
+			this._bounds.update(this);
+			return this._bounds;
 		}
 		
-		private function enterFrameEventListener(event:Event):void {
+		public function debug(graphics:Graphics):void {
+			super.graphics.clear();
+			
 			super.x = xPosition;
 			super.y = yPosition;
 			super.rotation = this.angle * 180.0 / Math.PI;
-			this.draw();
-		}
-		
-		private function draw():void {
-			super.graphics.clear();
-			super.graphics.lineStyle(1.0, 0xCCAAAA, 0.5);
-			super.graphics.drawCircle(0.0, 0.0, 5.0);
-			super.graphics.moveTo( -15.0, 0.0);
-			super.graphics.lineTo(15.0, 0.0);
-			super.graphics.moveTo(0.0, -15.0);
-			super.graphics.lineTo(0.0, 15.0);
+			
+			var rect:Rectangle2D = this.bounds;
+			rect.draw(graphics);
+			
+			
 			if (this._collisionGeometry) this._collisionGeometry.draw(super.graphics);
-			this.bound();
+			this.positon.draw(super.graphics);
+			//this.bound();
 		}
 	}
 }
