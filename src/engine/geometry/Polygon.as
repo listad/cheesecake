@@ -31,12 +31,20 @@
 		
 		// m
 		private var _vertices:Vector.<Vector2D>;
+		private var _edges:Vector.<Vector2D> = new Vector.<Vector2D>();
 		
 		public function Polygon(vertices:Vector.<Vector2D>) {
 			this._vertices = vertices;
+			
+			for(var i:int = 0; i < this._vertices.length; i++) {
+				var a:Vector2D = vertices[i];
+				var b:Vector2D = (i + 1 == vertices.length)?vertices[0]:vertices[i + 1];
+				this._edges.push( Vector2D.subtract(a, b) );
+			}
 		}
 		
 		public function get vertices():Vector.<Vector2D> { return this._vertices;  }
+		public function get edges():Vector.<Vector2D> { return this._edges;  }
 		
 		//DEBUG!!!
 		

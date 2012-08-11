@@ -23,6 +23,7 @@
 			this._x += vector.x;
 			this._y += vector.y;
 		}
+		
 		public function subtract(vector:Vector2D):void {
 			this._x -= vector.x;
 			this._y -= vector.y;
@@ -30,6 +31,15 @@
 		
 		public function dot(vector:Vector2D):Number {
 			return this._x * vector.x + this._y * vector.y;
+		}
+		
+		public function divide(scalar:Number):void {
+			this._x /= scalar;
+			this._y /= scalar;
+		}
+		
+		public function normalize():void {
+			this.divide(this.length);
 		}
 		
 		public function setVector(x:Number = 0.0, y:Number = 0.0):void {

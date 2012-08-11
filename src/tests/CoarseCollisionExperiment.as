@@ -23,14 +23,17 @@
 			var sandbox:PhysicsSandbox = new PhysicsSandbox();
 			super.addChild(sandbox);
 			
-			this._rigidBody = new RigidBody(100, 100, 0.5, 10, 10000, Polygon.convexRegular(5, 100) );
+			var block:RigidBody = new RigidBody(300, 300, -Math.PI * 0.05, Infinity, Infinity, Polygon.rect(300, 30) );
+			sandbox.addRigidBody(block);
+			
+			
+			this._rigidBody = new RigidBody(100, 100, 0.5, 1, 5000, Polygon.rect(150, 30) );
 		
 			sandbox.addRigidBody(this._rigidBody);
-			_rigidBody.addForce(new Friction(0.5));
+			_rigidBody.addForce(new Friction(10.0));
 			
 			
-			//var block:RigidBody = new RigidBody(300, 300, -Math.PI * 0.05, Infinity, Infinity, Polygon.rect(300, 30) );
-			//sandbox.addRigidBody(block);
+			
 			
 			sandbox.run();
 			

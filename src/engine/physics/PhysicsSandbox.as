@@ -2,6 +2,8 @@
 	import engine.util.Time;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import engine.geometry.Matrix2D;
+	import engine.geometry.Vector2D;
 	
 	public class PhysicsSandbox extends Sprite {
 		// Const
@@ -55,10 +57,12 @@
 		// Private
 		
 		private function enterFrameEventListener(event:Event):void {
+			super.graphics.clear();//clear debug graphics
+			
 			var dt:Number = Time.time - this._lastUpdate;
 			this._lastUpdate = Time.time;
 			
-			trace("frameRate: ", Math.round(1 / dt) );
+			//trace("frameRate: ", Math.round(1 / dt) );
 			
 			var dynamicsNum:int = this._dynamicBodies.length;
 			var staticsNum:int = this._staticBodies.length;
@@ -75,19 +79,18 @@
 				for (j = 0; j < dynamicsNum; j++) {
 					//other dynamics
 					for (var q:int = j + 1; q < dynamicsNum; q++) {
-					
+						this.checkCollision(this._dynamicBodies[j], this._dynamicBodies[q]);
 					}
 					//all statics
 					for (var q:int = 0; q < staticsNum; q++) {
-					
+						this.checkCollision(this._dynamicBodies[j], this._staticBodies[q]);
 					}
 					
 				}
 				//
 			}
 			
-			//draw debug layer
-			super.graphics.clear();
+			//draw debug graphics
 			for (j = 0; j < dynamicsNum; j++) {
 					rigidBody = this._dynamicBodies[j];
 					rigidBody.debug(super.graphics);
@@ -99,7 +102,47 @@
 			
 		}
 		
-		//Debug
+		private function checkCollision(bodyA:RigidBody, bodyB:RigidBody):void {
+			if(bodyA.bounds.collide(bodyB.bounds)) {
+				bodyA.bounds.draw(super.graphics, 1.0, 0xFF0000, 0.1, 0x000000, 0.0);//draw debug graphics
+				bodyB.bounds.draw(super.graphics, 1.0, 0xFF0000, 0.1, 0x000000, 0.0);//draw debug graphics
+				
+				
+				
+			}//
+		}
 		
-	}
+		//polygon versus polygon
+		/*private function pvpCollision(bodyA:RigidBody, bodyB:RigidBody):boolean {
+			var collision:Boolean = false;
+				
+			var projectionDistanceMin:Number = Number.MAX_VALUE;
+			
+			//BODY A
+			var matrix:Matrix2D = bodyA.matrix;
+			
+			var edges:Vector.<Vector2D> = bodyA.collisionGeometry.edges;
+			var length:int = edges.length;
+			for(var i:int = 0; i < length; i++) {
+				var edge:Vector2D = matrix.transformVector2D(edges[i]);
+				var axis:Vector2D = edge.normal;
+				axis.normalize();
+				
+				/// project bodies and calc dist
+				var projectionDistance:Number = 0.0;
+				if(projectionDistance > 0) return false;
+				
+				projectionDistance = Math.abs(projectionDistance);
+				if(projectionDistance < projectionDistanceMin) {
+					projectionDistanceMin = projectionDistance;
+					//save axis
+				}
+			}
+			//BODY B
+			
+			if(collision) {
+				
+			}
+		}*/
+	}//class
 }
