@@ -15,6 +15,19 @@
 			);
 		}
 		
+		public static function convexRegular(sides:int, radius:int):Polygon {
+			var corner:Number = 2.0 * Math.PI / sides;
+			var verticesCoords:Vector.<Vector2D> = new Vector.<Vector2D>();
+			
+			for (var i:int = 0; i < sides; i++) {
+				var x:Number = radius * Math.cos(corner * i);
+				var y:Number = radius * Math.sin(corner * i);
+				verticesCoords[i] = new Vector2D(x, y);
+			}
+			
+			return new Polygon(verticesCoords);
+		}
+		
 		
 		// m
 		private var _vertices:Vector.<Vector2D>;
