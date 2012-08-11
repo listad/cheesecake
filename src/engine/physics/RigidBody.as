@@ -42,6 +42,9 @@
 		
 		private var _matrix:Matrix2D = new Matrix2D();
 		
+		private var _quadtrees:Quadtrees;
+		private var _quadcell:Cell;
+		
 		//RK4
 		private var __k1:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
 		private var __k2:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
@@ -57,6 +60,12 @@
 			this._mass = mass;
 			this._inertiaTensor = inertiaTensor;
 			this._collisionGeometry = collisionGeometry;
+		}
+		
+		public function init(quadtrees:Quadtrees):void {
+			this._quadtrees = quadtrees;
+			
+			this._quadcell = this._quadtrees.push(this);
 		}
 		
 		// Public
@@ -118,6 +127,9 @@
 		public function get matrix():Matrix2D { return this._matrix; }
 		
 		public function get collisionGeometry():Polygon { return this._collisionGeometry; }
+		
+		public function get quadcell():Cell { return this._quadcell; }
+		
 		//TODO: set
 		
 		// Internal
@@ -146,6 +158,7 @@
 			this.state = origin;
 			
 			this._matrix.angle = this.angle;
+			this._quadcell = this._quadcell.repush(this);
 		}
 		
 		// Private
@@ -194,6 +207,8 @@
 			
 			if (this._collisionGeometry) this._collisionGeometry.draw(super.graphics);
 			this.positon.draw(super.graphics);
+			
+			//this._quadcell.draw(graphics);//
 			//this.bound();
 		}
 	}

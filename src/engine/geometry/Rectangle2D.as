@@ -30,7 +30,7 @@
 				var vertex:Vector2D = rigidBody.collisionGeometry.vertices[i];
 				var distance:Number = vertex.length;
 				if(distance > this._radius) this._radius = distance;
-				vertex = matrix.transformVector2D(vertex, null, rigidBody.x, rigidBody.y);
+				vertex = matrix.transformVector2D(vertex, null, rigidBody.xPosition, rigidBody.yPosition);
 				if (vertex.x < _minX) _minX = vertex.x;
 				if (vertex.x > _maxX) _maxX = vertex.x;
 				if (vertex.y < _minY) _minY = vertex.y;

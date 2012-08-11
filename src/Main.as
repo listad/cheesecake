@@ -1,4 +1,5 @@
 package {
+	import engine.physics.Quadtrees;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import tests.CoarseCollisionExperiment;
@@ -16,6 +17,7 @@ package {
 			super.removeEventListener(Event.ADDED_TO_STAGE, this.init);
 			//new MikaTest();
 			this.runProjectileMotionExperiment();
+			//new Quadtrees(super.graphics);
 		}
 		
 		private function runProjectileMotionExperiment():void {
