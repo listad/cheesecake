@@ -14,14 +14,15 @@
 			
 		}
 		public function collide(rectange:Rectangle2D):Boolean {
-			return false;//
+			if (maxX < rectange.minX || maxY < rectange.minY || rectange.maxX < minX || rectange.maxY < minY) return false;
+			return true;
 		}
 		public function update(rigidBody:RigidBody):void {
 			this._rigidBody = rigidBody;
-			this._minX = rigidBody.x;
-			this._maxX = rigidBody.x;
-			this._minY = rigidBody.y;
-			this._maxY = rigidBody.y;
+			this._minX = rigidBody.xPosition;
+			this._maxX = rigidBody.xPosition;
+			this._minY = rigidBody.yPosition;
+			this._maxY = rigidBody.yPosition;
 			
 			var matrix:Matrix2D = rigidBody.matrix;
 			
@@ -45,7 +46,7 @@
 			graphics.lineStyle(lineThickness, lineColor, lineAlpha);
 			graphics.beginFill(fillColor, fillAlpha);
 			graphics.drawRect(this._minX, this._minY, this._maxX - this._minX, this._maxY - this._minY);
-			graphics.drawCircle(this._rigidBody.x, this._rigidBody.y, this._radius);
+			//graphics.drawCircle(this._rigidBody.x, this._rigidBody.y, this._radius);
 			graphics.endFill();
 		}
 	}
