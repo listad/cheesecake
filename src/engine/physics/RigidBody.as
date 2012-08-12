@@ -38,12 +38,13 @@
 		private var _inertiaTensor:Number = 5000.0;
 		
 		private var _collisionGeometry:Polygon;
-		private var _bounds:Rectangle2D = new Rectangle2D();
+		private var _bounds:Bounds2D = new Bounds2D();
 		
 		private var _matrix:Matrix2D = new Matrix2D();
 		
 		private var _quadtrees:Quadtrees;
 		private var _quadcell:Cell;
+		private var _quadtreeVisible:Boolean = false;
 		
 		//RK4
 		private var __k1:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
@@ -128,7 +129,10 @@
 		
 		public function get collisionGeometry():Polygon { return this._collisionGeometry; }
 		
+		//quadtrees
 		public function get quadcell():Cell { return this._quadcell; }
+		public function get quadtreeVisible():Boolean { return this._quadtreeVisible; }
+		public function set quadtreeVisible(value:Boolean):void { this._quadtreeVisible = value; }
 		
 		//TODO: set
 		

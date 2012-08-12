@@ -48,7 +48,7 @@
 		
 		//DEBUG!!!
 		
-		public function draw(graphics:Graphics, lineThickness:Number = 2.0, lineColor:uint = 0x440000, lineAlpha:Number = 0.45, fillColor:uint = 0x440000, fillAlpha = 0.15):void {
+		public function draw(graphics:Graphics, lineThickness:Number = 2.0, lineColor:uint = 0x660000, lineAlpha:Number = 0.9, fillColor:uint = 0xFFFFFF, fillAlpha = 0.75):void {
 			graphics.lineStyle(lineThickness, lineColor, lineAlpha);
 			graphics.beginFill(fillColor, fillAlpha);
 			graphics.moveTo(this._vertices[0].x, this._vertices[0].y);

@@ -1,10 +1,13 @@
 package {
-	import engine.physics.Quadtrees;
+	
+	
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import tests.CoarseCollisionExperiment;
 	import tests.MikaTest;
 	import tests.ProjectileMotionExperiment;
+	
+	[SWF(width = "1000", height = "1000", frameRate = "60", backgroundColor = "#FFFFFF")]
 	
 	public class Main extends Sprite {
 		
@@ -17,7 +20,6 @@ package {
 			super.removeEventListener(Event.ADDED_TO_STAGE, this.init);
 			//new MikaTest();
 			this.runProjectileMotionExperiment();
-			//new Quadtrees(super.graphics);
 		}
 		
 		private function runProjectileMotionExperiment():void {

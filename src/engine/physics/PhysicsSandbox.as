@@ -1,5 +1,6 @@
 ﻿package engine.physics {
 	import engine.util.Time;
+	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import engine.geometry.Matrix2D;
@@ -18,13 +19,26 @@
 		
 		private var _quadtrees:Quadtrees;
 		
-		private var _quadgraphicssprite:Sprite = new Sprite();
+		private var _staticGraphics:Graphics;
+		private var _dynamicGraphics:Graphics;
 		
 		// Constructor
 		
 		public function PhysicsSandbox() {
-			super.addChild(_quadgraphicssprite);
-			_quadtrees = new Quadtrees(_quadgraphicssprite.graphics);
+			var temp:Sprite = new Sprite();
+			super.addChild(temp);
+			temp.cacheAsBitmap = true;
+			temp.mouseEnabled = temp.mouseChildren = false;
+			_staticGraphics = temp.graphics;
+			
+			temp = new Sprite();
+			super.addChild(temp);
+			
+			_dynamicGraphics = temp.graphics;
+			
+			
+			
+			_quadtrees = new Quadtrees(_staticGraphics);
 			super.mouseEnabled = false;
 		}
 		
@@ -64,7 +78,8 @@
 		// Private
 		
 		private function enterFrameEventListener(event:Event):void {
-			super.graphics.clear();//clear debug graphics
+			this._dynamicGraphics.clear();//clear debug graphics
+			super.graphics.clear();
 			
 			var dt:Number = Time.time - this._lastUpdate;
 			this._lastUpdate = Time.time;
@@ -81,6 +96,7 @@
 				for (var j:int = 0; j < dynamicsNum; j++) {
 					var rigidBody:RigidBody = this._dynamicBodies[j];
 					rigidBody.physicsUpdate(ddt);
+					rigidBody.quadtreeVisible = true;
 				}
 			//	//collisions
 			//	for (j = 0; j < dynamicsNum; j++) {
@@ -97,9 +113,17 @@
 				//
 				for (j = 0; j < dynamicsNum; j++) {
 					rigidBody = this._dynamicBodies[j];
+					rigidBody.quadtreeVisible = false;
+					
 					var cells:Vector.<Cell> = _quadtrees.getCellsNearBody(rigidBody);
 					for (var q:int = 0; q < cells.length; q++) {
-							cells[q].draw(super.graphics);
+						var cell:Cell = cells[q];
+						cell.draw(super.graphics);
+						var bodies:Vector.<RigidBody> = cell.rigidBodies;
+						var length:int = bodies.length;
+						for (var p:int = 0; p < length; p++) {
+							this.checkCollision(rigidBody, bodies[p]);
+						}
 					}
 				}
 			
@@ -109,11 +133,11 @@
 			//draw debug graphics
 			for (j = 0; j < dynamicsNum; j++) {
 					rigidBody = this._dynamicBodies[j];
-					rigidBody.debug(super.graphics);
+					rigidBody.debug(this._dynamicGraphics);
 			}
 			for (j = 0; j < staticsNum; j++) {
 					rigidBody = this._staticBodies[j];
-					rigidBody.debug(super.graphics);
+					rigidBody.debug(this._dynamicGraphics);
 			}
 			
 			//stop();
@@ -121,9 +145,17 @@
 		}
 		
 		private function checkCollision(bodyA:RigidBody, bodyB:RigidBody):void {
-			if(bodyA.bounds.collide(bodyB.bounds)) {
-				bodyA.bounds.draw(super.graphics, 1.0, 0xFF0000, 0.5, 0x000000, 0.0);//draw debug graphics
-				bodyB.bounds.draw(super.graphics, 1.0, 0xFF0000, 0.5, 0x000000, 0.0);//draw debug graphics
+			_dynamicGraphics.lineStyle(1.0, 0xFF0000, 1);
+			_dynamicGraphics.moveTo(bodyA.xPosition, bodyA.yPosition);
+			_dynamicGraphics.lineTo(bodyB.xPosition, bodyB.yPosition);
+			
+			if (bodyA.bounds.collide(bodyB.bounds)) {
+				_dynamicGraphics.lineStyle(4.0, 0xFF0000, 1);
+				_dynamicGraphics.moveTo(bodyA.xPosition, bodyA.yPosition);
+				_dynamicGraphics.lineTo(bodyB.xPosition, bodyB.yPosition);
+				
+				bodyA.bounds.draw(super.graphics, 2.0, 0xFF0000, 0.5, 0xFF0000, 0.1);//draw debug graphics
+				bodyB.bounds.draw(super.graphics, 2.0, 0xFF0000, 0.5, 0xFF0000, 0.1);//draw debug graphics
 				
 				//step2
 				

@@ -23,14 +23,32 @@
 			var sandbox:PhysicsSandbox = new PhysicsSandbox();
 			super.addChild(sandbox);
 			
-			var block:RigidBody = new RigidBody(300, 300, 0, Infinity, Infinity, Polygon.rect(60, 60) );
-			sandbox.addRigidBody(block);
+			var block:RigidBody;
+			
+			for (var i:int = 0; i < 4; i++) {
+				block = new RigidBody(125 + i * 250, 250+375, 0, Infinity, Infinity, Polygon.rect(125, 125) );
+				sandbox.addRigidBody(block);
+			}
+			
+			for (var i:int = 0; i < 8; i++) {
+				block = new RigidBody(62.5 + i * 125, 250+437.5, 0, Infinity, Infinity, Polygon.rect(62.5, 62.5) );
+				sandbox.addRigidBody(block);
+			}
+			
+			for (var i:int = 0; i < 16; i++) {
+				block = new RigidBody(31.25 + i * 62.5, 250+531.25-62.5, 0, Infinity, Infinity, Polygon.rect(31.25, 31.25) );
+				sandbox.addRigidBody(block);
+			}
+			
+			trace(437.5+62.5+31.25);
 			
 			
-			this._rigidBody = new RigidBody(100, 100, 0, 1, 5000, Polygon.rect(100, 100) );
+			
+			
+			this._rigidBody = new RigidBody(100, 100, 0, 1, 5000, Polygon.convexRegular(3, 50) );
 		
 			sandbox.addRigidBody(this._rigidBody);
-			_rigidBody.addForce(new Friction(1.0));
+			_rigidBody.addForce(new Friction(10.0));
 			//_rigidBody.addForce(new Gravity(300.0));
 			
 			
@@ -85,7 +103,7 @@
 				
 				
 			super.graphics.clear();
-			super.graphics.lineStyle(2.0, 0xFF0000, 0.5);
+			super.graphics.lineStyle(2.0, 0x0000FF, 0.5);
 			super.graphics.moveTo(mouseDown.x+_rigidBody.positon.x, mouseDown.y+_rigidBody.positon.y);
 			super.graphics.lineTo(super.mouseX, super.mouseY);
 		}

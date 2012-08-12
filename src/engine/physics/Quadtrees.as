@@ -4,8 +4,8 @@ package engine.physics {
 	public class Quadtrees {
 		public static const DEPTH:int = 4;
 		
-		public static const WIDTH:Number = 600.0;
-		public static const HEIGHT:Number = 600.0;
+		public static const WIDTH:Number = 1000.0;
+		public static const HEIGHT:Number = 1000.0;
 		
 		private var _successor:Cell;
 		
@@ -20,11 +20,13 @@ package engine.physics {
 		//getcell
 		public function getCellsNearBody(body:RigidBody):Vector.<Cell> {
 			var cells:Vector.<Cell> = new Vector.<Cell>();
-			cells.push(body.quadcell);
+			if (body.quadcell.rigidBodies.length > 1)//
+				cells.push(body.quadcell);
 			
 			var parent:Cell = body.quadcell.parent;
 			while (parent != null) {
-				cells.push(parent);
+				if (parent.rigidBodies.length > 0)//
+					cells.push(parent);
 				parent = parent.parent;
 			}
 			
