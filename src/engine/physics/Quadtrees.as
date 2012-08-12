@@ -2,7 +2,7 @@ package engine.physics {
 	import flash.display.Graphics;
 	
 	public class Quadtrees {
-		public static const DEPTH:int = 4;
+		public static const DEPTH:int = 3;
 		
 		public static const WIDTH:Number = 1000.0;
 		public static const HEIGHT:Number = 1000.0;

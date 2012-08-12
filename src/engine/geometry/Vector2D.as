@@ -8,6 +8,12 @@
 		public static function subtract(a:Vector2D, b:Vector2D):Vector2D {
 			return new Vector2D(a.x - b.x, a.y - b.y);
 		}
+		public static function negate(vector:Vector2D):Vector2D {
+			return new Vector2D( -vector.x, -vector.y);
+		}
+		public static function scale(vector:Vector2D, value:Number):Vector2D {
+			return new Vector2D(vector.x * value, vector.y * value);
+		}
 		
 		// // //
 		
@@ -19,14 +25,16 @@
 			this._y = y;
 		}
 		
-		public function add(vector:Vector2D):void {
+		public function add(vector:Vector2D):Vector2D {
 			this._x += vector.x;
 			this._y += vector.y;
+			return this;
 		}
 		
-		public function subtract(vector:Vector2D):void {
+		public function subtract(vector:Vector2D):Vector2D {
 			this._x -= vector.x;
 			this._y -= vector.y;
+			return this;
 		}
 		
 		public function dot(vector:Vector2D):Number {

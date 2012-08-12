@@ -41,7 +41,7 @@
 			var matrix:Matrix2D = _rigidBody.matrix;
 			
 			_mouseDownPosition.setVector(super.mouseX, super.mouseY);
-			_mouseDownPosition.subtract(_rigidBody.positon);
+			_mouseDownPosition.subtract(_rigidBody.position);
 			_mouseDownPosition = matrix.transponseVector2D(_mouseDownPosition);
 			
 			
@@ -73,14 +73,14 @@
 				//var point:Vector2D = Vector2D.subtract(mouseDown, _rigidBody.positon);
 				
 				mouseUpPosition.subtract(mouseDown);
-				mouseUpPosition.subtract(_rigidBody.positon);
+				mouseUpPosition.subtract(_rigidBody.position);
 				
 				_rigidBody.addImpulseAtPoint(mouseUpPosition, mouseDown );
 				
 				
 			super.graphics.clear();
 			super.graphics.lineStyle(2.0, 0xFF0000, 0.5);
-			super.graphics.moveTo(mouseDown.x+_rigidBody.positon.x, mouseDown.y+_rigidBody.positon.y);
+			super.graphics.moveTo(mouseDown.x+_rigidBody.position.x, mouseDown.y+_rigidBody.position.y);
 			super.graphics.lineTo(super.mouseX, super.mouseY);
 		}
 		

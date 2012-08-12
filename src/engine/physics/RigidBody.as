@@ -38,6 +38,8 @@
 		private var _inertiaTensor:Number = 5000.0;
 		
 		private var _collisionGeometry:Polygon;
+		
+		private var _boundsNeedToUpdate:Boolean = true;
 		private var _bounds:Bounds2D = new Bounds2D();
 		
 		private var _matrix:Matrix2D = new Matrix2D();
@@ -67,6 +69,10 @@
 			this._quadtrees = quadtrees;
 			
 			this._quadcell = this._quadtrees.push(this);
+			
+			if (this._collisionGeometry) this._collisionGeometry.draw(super.graphics);
+			this.position.draw(super.graphics);
+			
 		}
 		
 		// Public
@@ -92,22 +98,37 @@
 		
 		//TODO: removeForce
 		
-		/*public function toLocal(vector:Vector2D):Vector2D {
-			
+		public function toLocal(vector:Vector2D):Vector2D {
+			return this._matrix.transponseVector2D(vector, null, this.xPosition, this.yPosition);
 		}
 		
 		public function toGlobal(vector:Vector2D):Vector2D {
-			
-		}*/
+			return this._matrix.transformVector2D(vector, null, this.xPosition, this.yPosition);
+		}
+		
+		public function repush():void {
+			this._quadcell = this._quadcell.repush(this);
+		}
 		
 		// set & get
 		
-		public function get positon():Vector2D { return new Vector2D(this._state[POSITION_X_INDEX], this._state[POSITION_Y_INDEX]); }
+		public function get position():Vector2D { return new Vector2D(this._state[POSITION_X_INDEX], this._state[POSITION_Y_INDEX]); }
+		public function set position(value:Vector2D):void { 
+			this.xPosition = value.x;
+			this.yPosition = value.y;
+		}
 		
 		public function get xPosition():Number { return this._state[POSITION_X_INDEX]; }
-		public function set xPosition(value:Number):void { this._state[POSITION_X_INDEX] = value; }
+		public function set xPosition(value:Number):void {
+			this._state[POSITION_X_INDEX] = value;
+			this._boundsNeedToUpdate = true;
+		}
+			
 		public function get yPosition():Number { return this._state[POSITION_Y_INDEX]; }
-		public function set yPosition(value:Number):void { this._state[POSITION_Y_INDEX] = value; }
+		public function set yPosition(value:Number):void {
+			this._state[POSITION_Y_INDEX] = value;
+			this._boundsNeedToUpdate = true;
+		}
 		
 		public function get xVelocity():Number { return this._state[VELOCITY_X_INDEX]; }
 		public function set xVelocity(value:Number):void { this._state[VELOCITY_X_INDEX] = value; }
@@ -162,6 +183,7 @@
 			this.state = origin;
 			
 			this._matrix.angle = this.angle;
+			this._boundsNeedToUpdate = true;
 			this._quadcell = this._quadcell.repush(this);
 		}
 		
@@ -193,24 +215,23 @@
 		}
 		
 		public function get bounds():Rectangle2D {
-			this._bounds.update(this);
+			if(this._boundsNeedToUpdate == true) this._bounds.update(this);
 			return this._bounds;
 		}
 		
 		// DEBUG
 		
 		public function debug(graphics:Graphics):void {
-			super.graphics.clear();
+			//super.graphics.clear();
 			
 			super.x = xPosition;
 			super.y = yPosition;
 			super.rotation = this.angle * 180.0 / Math.PI;
 			
-			var rect:Rectangle2D = this.bounds;
-			rect.draw(graphics);
+			//var rect:Rectangle2D = this.bounds;
+			//rect.draw(graphics);
 			
-			if (this._collisionGeometry) this._collisionGeometry.draw(super.graphics);
-			this.positon.draw(super.graphics);
+			
 			
 			//this._quadcell.draw(graphics);//
 			//this.bound();

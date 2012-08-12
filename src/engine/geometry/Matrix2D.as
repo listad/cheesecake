@@ -31,10 +31,10 @@
 			return vout;
 		}
 		
-		public function transponseVector2D(vin:Vector2D, vout:Vector2D = null):Vector2D {
+		public function transponseVector2D(vin:Vector2D, vout:Vector2D = null, tx:Number = 0.0, ty:Number = 0.0):Vector2D {
 			if (vout == null) vout = new Vector2D();
-			vout.x = this._a * vin.x + this._c * vin.y;
-			vout.y = this._b * vin.x + this._d * vin.y;
+			vout.x = this._a * vin.x + this._c * vin.y - tx;
+			vout.y = this._b * vin.x + this._d * vin.y - ty;
 			return vout;
 		}
 	}

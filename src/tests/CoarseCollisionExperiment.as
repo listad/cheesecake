@@ -25,27 +25,37 @@
 			
 			var block:RigidBody;
 			
-			for (var i:int = 0; i < 4; i++) {
-				block = new RigidBody(125 + i * 250, 250+375, 0, Infinity, Infinity, Polygon.rect(125, 125) );
-				sandbox.addRigidBody(block);
+			for (var i:int = 0; i < 10; i++) {
+				for (var j:int = 0; j < 10; j++) {
+					
+				
+					block = new RigidBody(230 + 50 + i * 75, 230 + 50 + j * 75, 0, 1, 5000, Polygon.convexRegular(3+int(Math.random()*4), 10+Math.random()*10 ) );
+					sandbox.addRigidBody(block);
+				
+				}
 			}
 			
-			for (var i:int = 0; i < 8; i++) {
-				block = new RigidBody(62.5 + i * 125, 250+437.5, 0, Infinity, Infinity, Polygon.rect(62.5, 62.5) );
-				sandbox.addRigidBody(block);
-			}
+			//for (var i:int = 0; i < 4; i++) {
+			//	block = new RigidBody(125 + i * 250, 250+375, 0, 1, 5000, Polygon.rect(125, 125) );
+			//	sandbox.addRigidBody(block);
+			//}
 			
-			for (var i:int = 0; i < 16; i++) {
-				block = new RigidBody(31.25 + i * 62.5, 250+531.25-62.5, 0, Infinity, Infinity, Polygon.rect(31.25, 31.25) );
-				sandbox.addRigidBody(block);
-			}
+			//for (var i:int = 0; i < 8; i++) {
+			//	block = new RigidBody(62.5 + i * 125, 250+437.5, 0, 1, 5000, Polygon.rect(62.5, 62.5) );
+			//	sandbox.addRigidBody(block);
+			//}
+			
+			//for (var i:int = 0; i < 16; i++) {
+			//	block = new RigidBody(31.25 + i * 62.5, 250+531.25-62.5, 0, 1, 5000, Polygon.rect(31.25, 31.25) );
+			//	sandbox.addRigidBody(block);
+			//}
 			
 			trace(437.5+62.5+31.25);
 			
 			
 			
 			
-			this._rigidBody = new RigidBody(100, 100, 0, 1, 5000, Polygon.convexRegular(3, 50) );
+			this._rigidBody = new RigidBody(100, 100, 0, 1, 5000, Polygon.rect(60, 60) );
 		
 			sandbox.addRigidBody(this._rigidBody);
 			_rigidBody.addForce(new Friction(10.0));
@@ -65,7 +75,7 @@
 			var matrix:Matrix2D = _rigidBody.matrix;
 			
 			_mouseDownPosition.setVector(super.mouseX, super.mouseY);
-			_mouseDownPosition.subtract(_rigidBody.positon);
+			_mouseDownPosition.subtract(_rigidBody.position);
 			_mouseDownPosition = matrix.transponseVector2D(_mouseDownPosition);
 			
 			
@@ -97,15 +107,15 @@
 				//var point:Vector2D = Vector2D.subtract(mouseDown, _rigidBody.positon);
 				
 				mouseUpPosition.subtract(mouseDown);
-				mouseUpPosition.subtract(_rigidBody.positon);
+				mouseUpPosition.subtract(_rigidBody.position);
 				
 				_rigidBody.addImpulseAtPoint(mouseUpPosition, mouseDown );
 				
 				
-			super.graphics.clear();
-			super.graphics.lineStyle(2.0, 0x0000FF, 0.5);
-			super.graphics.moveTo(mouseDown.x+_rigidBody.positon.x, mouseDown.y+_rigidBody.positon.y);
-			super.graphics.lineTo(super.mouseX, super.mouseY);
+			//super.graphics.clear();
+			//super.graphics.lineStyle(2.0, 0x0000FF, 0.5);
+			//super.graphics.moveTo(mouseDown.x+_rigidBody.position.x, mouseDown.y+_rigidBody.position.y);
+			//super.graphics.lineTo(super.mouseX, super.mouseY);
 		}
 		
 	}

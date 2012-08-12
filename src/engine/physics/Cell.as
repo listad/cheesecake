@@ -51,10 +51,11 @@ package engine.physics {
 		}
 		
 		public function isContains(body:RigidBody):Boolean {
-			if (body.bounds.maxX > _maxX) return false;
-			if (body.bounds.minX < _minX) return false;
-			if (body.bounds.maxY > _maxY) return false;
-			if (body.bounds.minY < _minY) return false;
+			var bounds:Rectangle2D = body.bounds;
+			if (bounds.maxX > super._maxX) return false;
+			if (bounds.minX < super._minX) return false;
+			if (bounds.maxY > super._maxY) return false;
+			if (bounds.minY < super._minY) return false;
 			return true;
 		}
 		
