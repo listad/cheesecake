@@ -102,20 +102,20 @@
 				for (var j:int = 0; j < dynamicsNum; j++) {
 					var rigidBody:RigidBody = this._dynamicBodies[j];
 					rigidBody.physicsUpdate(ddt);
-					//rigidBody.quadtreeVisible = true;
+					rigidBody.quadtreeVisible = true;
 				}
-				//collisions
-				for (j = 0; j < dynamicsNum; j++) {
-					//other dynamics
-					for (var q:int = j + 1; q < dynamicsNum; q++) {
-						this.checkCollision(this._dynamicBodies[j], this._dynamicBodies[q]);
-					}
-					//all statics
-					for (var q:int = 0; q < staticsNum; q++) {
-						this.checkCollision(this._dynamicBodies[j], this._staticBodies[q]);
-					}
-					
-				}
+				////collisions, without quadtrees
+				//for (j = 0; j < dynamicsNum; j++) {
+				//	//other dynamics
+				//	for (var q:int = j + 1; q < dynamicsNum; q++) {
+				//		this.checkCollision(this._dynamicBodies[j], this._dynamicBodies[q]);
+				//	}
+				//	//all statics
+				//	for (var q:int = 0; q < staticsNum; q++) {
+				//		this.checkCollision(this._dynamicBodies[j], this._staticBodies[q]);
+				//	}
+				//	
+				//}
 				
 				for (j = 0; j < dynamicsNum; j++) {
 					rigidBody = this._dynamicBodies[j];
@@ -128,7 +128,7 @@
 						var bodies:Vector.<RigidBody> = cell.rigidBodies;
 						var length:int = bodies.length;
 						for (var p:int = 0; p < length; p++) {
-							if(rigidBody != bodies[p]) this.checkCollision(rigidBody, bodies[p]);
+							if(bodies[p].quadtreeVisible) this.checkCollision(rigidBody, bodies[p]);
 						}
 					}
 				}
@@ -137,7 +137,7 @@
 					rigidBody = this._dynamicBodies[j];
 					rigidBody.repush();
 				}
-				for (var j:int = 0; j < staticsNum; j++) {
+				for (j = 0; j < staticsNum; j++) {
 					rigidBody = this._staticBodies[j];
 					rigidBody.repush();
 				}
@@ -165,7 +165,6 @@
 			//_dynamicGraphics.lineTo(bodyB.xPosition, bodyB.yPosition);
 			
 			if (bodyA.bounds.collide(bodyB.bounds)) {
-				trace("WTF");
 				//_dynamicGraphics.lineStyle(4.0, 0xFF0000, 1);
 				//_dynamicGraphics.moveTo(bodyA.xPosition, bodyA.yPosition);
 				//_dynamicGraphics.lineTo(bodyB.xPosition, bodyB.yPosition);

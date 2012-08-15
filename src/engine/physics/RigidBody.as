@@ -215,7 +215,10 @@
 		}
 		
 		public function get bounds():Rectangle2D {
-			if(this._boundsNeedToUpdate == true) this._bounds.update(this);
+			if(this._boundsNeedToUpdate == true) {
+				this._bounds.update(this);
+				this._boundsNeedToUpdate = false;
+			}
 			return this._bounds;
 		}
 		

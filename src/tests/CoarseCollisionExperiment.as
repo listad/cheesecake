@@ -25,8 +25,8 @@
 			
 			var block:RigidBody;
 			
-			for (var i:int = 0; i < 10; i++) {
-				for (var j:int = 0; j < 10; j++) {
+			for (var i:int = 0; i < 8; i++) {
+				for (var j:int = 0; j < 8; j++) {
 					
 				
 					block = new RigidBody(230 + 50 + i * 75, 230 + 50 + j * 75, 0, 1, 5000, Polygon.convexRegular(3+int(Math.random()*4), 10+Math.random()*10 ) );
