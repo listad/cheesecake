@@ -237,11 +237,15 @@
 					index = 1;
 					
 					if (projectionA.isFurther(projectionB)) {
+						projA = projectionB;//test
+						projB = projectionA;//test
 						collidingA = bodyB;
 						collidingB = bodyA;
 					} else {
 						collidingA = bodyA;
 						collidingB = bodyB;
+						projA = projectionA;//test
+						projB = projectionB;//test
 					}
 				}
 			}
@@ -273,16 +277,19 @@
 				if(distance < projectionDistance) {
 					projectionDistance = distance;
 					mtv = axis;
-					projA = projectionA;//test
-					projB = projectionB;//test
+					
 					index = 2;
 					
 					if (projectionA.isFurther(projectionB)) {
+						projA = projectionB;//test
+						projB = projectionA;//test
 						collidingA = bodyB;
 						collidingB = bodyA;
 					} else {
 						collidingA = bodyA;
 						collidingB = bodyB;
+						projA = projectionA;//test
+						projB = projectionB;//test
 					}
 				}
 			}
@@ -296,18 +303,32 @@
 			
 			//new Collision(mtv, projectionDistance, collidingA, collidingB);
 			
-			//if (index == 2) projA.draw(this._dynamicGraphics, 4.0, 0xFF0000, 0.5);//test
-			//if (index == 1) projB.draw(this._dynamicGraphics, 4.0, 0x00FF00, 0.5);//test
-			projectionDistance += 0.001;
 			
 			
-			var massratio:Number;
+			
+			var points:Vector.<Vector2D> = projA.minVertices;
+			for (i = 0; i < points.length; i++) {
+				points[i].drawGlobal(this._dynamicGraphics, 6, 1.0, 0xFF0000);
+			}
+			
+			points = projB.maxVertices;
+			for (i = 0; i < points.length; i++) {
+				points[i].drawGlobal(this._dynamicGraphics, 6, 1.0, 0x00FF00);
+			}
+			
+			
 			var masssum:Number = collidingA.mass + collidingB.mass;
-			var collidingARatio:Number = 1.0 - masssum / collidingA.mass;
-			var collidingBRatio:Number = 1.0 - masssum / collidingB.mass;
 			
-			collidingA.position = collidingA.position.add( Vector2D.scale(mtv, 0.5 * projectionDistance)  );
-			collidingB.position = collidingB.position.subtract( Vector2D.scale(mtv, 0.5 * projectionDistance)  );
+			trace("distance:", projectionDistance);
+			var collidingARatio:Number = 2 * projectionDistance * (1.0 - collidingA.mass / masssum);
+			var collidingBRatio:Number = 2 * projectionDistance * (1.0 - collidingB.mass / masssum);
+			trace("result:", collidingARatio + collidingBRatio);
+			trace("ratio:", collidingARatio , collidingBRatio);
+			// 2 1
+			
+			
+			collidingA.position = collidingA.position.add( Vector2D.scale(mtv, collidingARatio)  );
+			collidingB.position = collidingB.position.add( Vector2D.scale(mtv, -collidingBRatio)  );
 			
 			
 		}

@@ -26,11 +26,11 @@
 			
 			var block:RigidBody;
 			
-			for (var i:int = 0; i < 90; i++) {
-				for (var j:int = 0; j < 50; j++) {
+			for (var i:int = 0; i < 5; i++) {
+				for (var j:int = 0; j < 4; j++) {
 					
 				
-					block = new RigidBody(60 + i * 20, 60 + j * 20, 0, 1, 5000, CollisionGeometry.convexRegular(3+int(Math.random()*4), 2+6*Math.random()*Math.random() ) );
+					block = new RigidBody(160 + i * 160, 160 + j * 160, 0, 9999999999, 5000, CollisionGeometry.convexRegular(3+int(Math.random()*4), 40+40*Math.random() ) );
 					sandbox.addRigidBody(block);
 				}
 			}

@@ -234,7 +234,7 @@
 				this._quadcell = this._quadcell.repush(this);
 				this.outdate();
 			} else {
-				this._sleeps = true;
+				//this._sleeps = true;
 			}
 		}
 		

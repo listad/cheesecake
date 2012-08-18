@@ -99,5 +99,9 @@
 			graphics.endFill();
 		}
 		
+		public function toString():String {
+			return this._x + ", " + this._y;
+		}
+		
 	}
 }

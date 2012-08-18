@@ -3,10 +3,12 @@
 	import flash.display.Graphics;
 	
 	public class Projection {
+		private static const EPSILON:Number = 2;
+		
 		private var _min:Number;
 		private var _max:Number;
-		private var _minVertex:Vector2D;
-		private var _maxVertex:Vector2D;
+		private var _minVertices:Vector.<Vector2D> = new Vector.<Vector2D>;
+		private var _maxVertices:Vector.<Vector2D> = new Vector.<Vector2D>;
 		
 		public function Projection(axis:Vector2D, body:RigidBody) {
 			this.project(axis, body);
@@ -22,14 +24,23 @@
 				var vertex:Vector2D = vertices[i];// body.toGlobal(vertices[i]);
 				var dotProduct:Number = axis.dot(vertex);
 				
-				if (dotProduct < this._min) {
+				//fixit
+				if (dotProduct < this._min - EPSILON) {
 					this._min = dotProduct;
-					this._minVertex = vertex;
+					this._minVertices.length = 0;
+					this._minVertices[0] = vertex;
+				} else if (Math.abs(dotProduct - this._min) < EPSILON) {
+					this._minVertices.push(vertex);
 				}
-				if (dotProduct > this._max) {
+				
+				if (dotProduct > this._max + EPSILON) {
 					this._max = dotProduct;
-					this._maxVertex = vertex;
+					this._maxVertices.length = 0;
+					this._maxVertices[0] = vertex;
+				} else if (Math.abs(dotProduct - this._max) < EPSILON) {
+					this._maxVertices.push(vertex);
 				}
+				
 			}
 		}
 		
@@ -42,12 +53,20 @@
 			return this._min - projection._max;
 		}
 		
-		public function draw(graphics:Graphics, lineThickness:Number = 1.0, lineColor:uint = 0x440000, lineAlpha:Number = 0.5):void {
-			graphics.lineStyle(lineThickness, lineColor, lineAlpha);
-			graphics.moveTo(this._minVertex.x, this._minVertex.y);
-			graphics.lineTo(this._maxVertex.x, this._maxVertex.y);
-			graphics.endFill();
+		public function get minVertices():Vector.<Vector2D> {
+			return this._minVertices;
 		}
+		
+		public function get maxVertices():Vector.<Vector2D> {
+			return this._maxVertices;
+		}
+		
+	//	public function draw(graphics:Graphics, lineThickness:Number = 1.0, lineColor:uint = 0x440000, lineAlpha:Number = 0.5):void {
+	//		graphics.lineStyle(lineThickness, lineColor, lineAlpha);
+	//		graphics.moveTo(this._minVertex.x, this._minVertex.y);
+	//		graphics.lineTo(this._maxVertex.x, this._maxVertex.y);
+	//		graphics.endFill();
+	//	}
 		
 	}
 }
