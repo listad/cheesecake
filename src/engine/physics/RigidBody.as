@@ -30,14 +30,17 @@
 		
 		// Private
 		
+		private var _sleeps:Boolean;
+		private var _change:Boolean;
+		
 		private var _state:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
-		private var _forces:Vector.<IForce> = new Vector.<IForce>;//массив сил
+		private var _forces:Vector.<IForce> = new Vector.<IForce>;
 		private var _force:Vector2D = new Vector2D(); //тёмная магия
 		private var _mass:Number = 1.0;
 		private var _torque:Number = 0.0;
 		private var _inertiaTensor:Number = 5000.0;
 		
-		private var _collisionGeometry:Polygon;
+		private var _collisionGeometry:CollisionGeometry;
 		
 		private var _boundsNeedToUpdate:Boolean = true;
 		private var _bounds:Bounds2D = new Bounds2D();
@@ -56,13 +59,19 @@
 		
 		// Constructor
 		
-		public function RigidBody(x:Number, y:Number, angle:Number, mass:Number = 1.0, inertiaTensor:Number = 100000.0, collisionGeometry:Polygon = null) {
+		public function RigidBody(x:Number, y:Number, angle:Number, mass:Number = 1.0, inertiaTensor:Number = 100000.0, collisionGeometry:CollisionGeometry = null) {
 			this.xPosition = x;
 			this.yPosition = y;
-			this.angle = angle; this._matrix.angle = this.angle;
+			this.angle = angle;
+			this._matrix.angle = this.angle;
+			
 			this._mass = mass;
 			this._inertiaTensor = inertiaTensor;
+			
 			this._collisionGeometry = collisionGeometry;
+			this._collisionGeometry.body = this;
+			
+			this._sleeps = true;//FIX IT
 		}
 		
 		public function init(quadtrees:Quadtrees):void {
@@ -73,16 +82,31 @@
 			if (this._collisionGeometry) this._collisionGeometry.draw(super.graphics);
 			this.position.draw(super.graphics);
 			
+			//test:
+			super.cacheAsBitmap = true;
+			
 		}
 		
 		// Public
 		
+		public function wakeUp():void {
+			this._sleeps = false;
+		}
+		
+		private function outdate():void {//FIX IT
+			this._boundsNeedToUpdate = true;
+			this._change = true;
+			if(this._collisionGeometry) this._collisionGeometry.outdate();
+		}
+		
 		public function addImpulse(impulse:Vector2D):void {
+			this.wakeUp();
 			this.xVelocity += impulse.x / this._mass;
 			this.yVelocity += impulse.y / this._mass;
 		}
 		
 		public function addTorque(value:Number):void {
+			this.wakeUp();
 			this.angularVelocity += value / this._inertiaTensor;
 		}
 		
@@ -92,18 +116,19 @@
 		}
 		
 		public function addForce(force:IForce):void {
+			this.wakeUp();
 			//TODO: if not exist
 			this._forces.push(force);
 		}
 		
 		//TODO: removeForce
 		
-		public function toLocal(vector:Vector2D):Vector2D {
-			return this._matrix.transponseVector2D(vector, null, this.xPosition, this.yPosition);
+		public function toLocal(vin:Vector2D, vout:Vector2D = null):Vector2D {
+			return this._matrix.transponseVector2D(vin, vout, this.xPosition, this.yPosition);
 		}
 		
-		public function toGlobal(vector:Vector2D):Vector2D {
-			return this._matrix.transformVector2D(vector, null, this.xPosition, this.yPosition);
+		public function toGlobal(vin:Vector2D, vout:Vector2D = null):Vector2D {
+			return this._matrix.transformVector2D(vin, vout, this.xPosition, this.yPosition);
 		}
 		
 		public function repush():void {
@@ -111,6 +136,11 @@
 		}
 		
 		// set & get
+		
+		public function get sleeps():Boolean { return this._sleeps; }
+		
+		public function get change():Boolean { return this._change; }
+		public function set change(value:Boolean):void { this._change = value; }
 		
 		public function get position():Vector2D { return new Vector2D(this._state[POSITION_X_INDEX], this._state[POSITION_Y_INDEX]); }
 		public function set position(value:Vector2D):void { 
@@ -121,13 +151,15 @@
 		public function get xPosition():Number { return this._state[POSITION_X_INDEX]; }
 		public function set xPosition(value:Number):void {
 			this._state[POSITION_X_INDEX] = value;
-			this._boundsNeedToUpdate = true;
+			this.outdate();
+			this.wakeUp();
 		}
 			
 		public function get yPosition():Number { return this._state[POSITION_Y_INDEX]; }
 		public function set yPosition(value:Number):void {
 			this._state[POSITION_Y_INDEX] = value;
-			this._boundsNeedToUpdate = true;
+			this.outdate();
+			this.wakeUp();
 		}
 		
 		public function get xVelocity():Number { return this._state[VELOCITY_X_INDEX]; }
@@ -148,7 +180,7 @@
 		
 		public function get matrix():Matrix2D { return this._matrix; }
 		
-		public function get collisionGeometry():Polygon { return this._collisionGeometry; }
+		public function get collisionGeometry():CollisionGeometry { return this._collisionGeometry; }
 		
 		//quadtrees
 		public function get quadcell():Cell { return this._quadcell; }
@@ -171,6 +203,8 @@
 			var temp:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
 			var origin:Vector.<Number> = state;
 			
+			var change:Boolean = false;
+			
 			this.define(this.__k1);
 			this.state = temp;
 			for (var i:int = 0; i < 6; i++) temp[i] = origin[i] + this.__k1[i] * dt * 0.5;
@@ -179,12 +213,29 @@
 			this.define(this.__k3);
 			for (i = 0; i < 6; i++) temp[i] = origin[i] + this.__k3[i] * dt;
 			this.define(this.__k4);
-			for (i = 0; i < 6; i++) origin[i] += dt * (this.__k1[i] + 2.0 * this.__k2[i] + 2.0 * this.__k3[i] + this.__k4[i]) / 6.0;
+			for (i = 0; i < 6; i++) {
+				//test:
+				var value:Number = dt * (this.__k1[i] + 2.0 * this.__k2[i] + 2.0 * this.__k3[i] + this.__k4[i]) / 6.0;
+				var abs:Number = value;
+				if (value < 0) abs = -value;
+				if (abs < 0.00001) value = 0.0;
+				
+				origin[i] += value;
+				if (value != 0.0) change = true;
+			}
 			this.state = origin;
 			
-			this._matrix.angle = this.angle;
-			this._boundsNeedToUpdate = true;
-			this._quadcell = this._quadcell.repush(this);
+			
+			
+			
+			
+			if (change) {
+				this._matrix.angle = this.angle;
+				this._quadcell = this._quadcell.repush(this);
+				this.outdate();
+			} else {
+				this._sleeps = true;
+			}
 		}
 		
 		// Private
@@ -234,7 +285,7 @@
 			//var rect:Rectangle2D = this.bounds;
 			//rect.draw(graphics);
 			
-			
+			//this._collisionGeometry.draw(super.graphics, 1.5, 0x660000, 0.9, this._sleeps?0xFFFFFF:0xFF0000, 0.75)
 			
 			//this._quadcell.draw(graphics);//
 			//this.bound();

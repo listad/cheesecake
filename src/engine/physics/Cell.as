@@ -4,6 +4,8 @@ package engine.physics {
 	import flash.display.Graphics;
 	
 	public class Cell extends Rectangle2D {
+		private var _rigidBodyNum:int = 0;
+		
 		private var _successors:Vector.<Cell> = new Vector.<Cell>();
 		private var _rigidBodies:Vector.<RigidBody> = new Vector.<RigidBody>();
 		private var _root:Cell;
@@ -22,7 +24,7 @@ package engine.physics {
 			super._maxY = super._minY + height;
 			this._parent = parent;
 			
-			if (graphics) super.draw(graphics, 1.0, 0x00FF00, 0.05, 0x000000, 0.0);
+			//if (graphics) super.draw(graphics, 1.0, 0x00FF00, 0.05, 0x000000, 0.0);
 			
 			if (depth > 0) {
 				var halfWidth:Number = 0.5 * width;
@@ -35,6 +37,13 @@ package engine.physics {
 		}
 		
 		public function push(body:RigidBody):Cell {
+			this._rigidBodyNum++;
+			var parent:Cell = this._parent;
+			while (parent != null) {
+				parent.rigidBodyNum++;
+				parent = parent.parent;
+			}
+				
 			var successorsNum:int = this._successors.length;
 			for (var i:int = 0; i < successorsNum; i++) {
 				var successor:Cell = this._successors[i];
@@ -46,8 +55,20 @@ package engine.physics {
 		}
 		
 		public function splice(body:RigidBody):void {
+			
+			
 			var index:int = this._rigidBodies.indexOf(body);//FIXME
-			if(index != -1) this._rigidBodies.splice(index, 1);//FIXME
+			if (index != -1) {
+				this._rigidBodyNum--;
+				this._rigidBodies.splice(index, 1);//FIXME
+				
+				
+				var parent:Cell = body.quadcell.parent;
+				while (parent != null) {
+					parent.rigidBodyNum--;
+					parent = parent.parent;
+				}
+			}
 		}
 		
 		public function isContains(body:RigidBody):Boolean {
@@ -82,15 +103,20 @@ package engine.physics {
 			for (var i:int = 0; i < successorsNum; i++) {
 				var successor:Cell = this._successors[i];
 				if (successor.collide(body.bounds)) {
-					if (successor._rigidBodies.length > 0)//
+					var incount:int = successor._rigidBodies.length;
+					if (incount > 0)//
 						cells.push(successor);
-					successor.getCellsUnderBody(body, cells);
+						
+					if(successor._rigidBodyNum - incount > 0) successor.getCellsUnderBody(body, cells);
 				}
 			}
 		}
 		
 		public function get parent():Cell { return this._parent; }
 		public function get rigidBodies():Vector.<RigidBody> { return this._rigidBodies; }
+		
+		public function get rigidBodyNum():int { return this._rigidBodyNum; }
+		public function set rigidBodyNum(value:int):void { this._rigidBodyNum = value; }
 		
 	}
 }

@@ -8,7 +8,7 @@ package {
 	import tests.MikaTest;
 	import tests.ProjectileMotionExperiment;
 	
-	[SWF(width = "1000", height = "1000", frameRate = "60", backgroundColor = "#FFFFFF")]
+	[SWF(width = "1920", height = "1080", frameRate = "60", backgroundColor = "#FFFFFF")]
 	
 	public class Main extends Sprite {
 		

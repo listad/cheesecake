@@ -2,6 +2,7 @@
 	import engine.geometry.Matrix2D;
 	import engine.geometry.Polygon;
 	import engine.geometry.Vector2D;
+	import engine.physics.CollisionGeometry;
 	import engine.physics.Friction;
 	import engine.physics.Gravity;
 	import engine.physics.PhysicsSandbox;
@@ -25,13 +26,12 @@
 			
 			var block:RigidBody;
 			
-			for (var i:int = 0; i < 8; i++) {
-				for (var j:int = 0; j < 8; j++) {
+			for (var i:int = 0; i < 90; i++) {
+				for (var j:int = 0; j < 50; j++) {
 					
 				
-					block = new RigidBody(230 + 50 + i * 75, 230 + 50 + j * 75, 0, 1, 5000, Polygon.convexRegular(3+int(Math.random()*4), 10+Math.random()*10 ) );
+					block = new RigidBody(60 + i * 20, 60 + j * 20, 0, 1, 5000, CollisionGeometry.convexRegular(3+int(Math.random()*4), 2+6*Math.random()*Math.random() ) );
 					sandbox.addRigidBody(block);
-				
 				}
 			}
 			
@@ -50,16 +50,15 @@
 			//	sandbox.addRigidBody(block);
 			//}
 			
-			trace(437.5+62.5+31.25);
 			
 			
 			
 			
-			this._rigidBody = new RigidBody(100, 100, 0, 1, 5000, Polygon.rect(60, 60) );
+			this._rigidBody = new RigidBody(0, 0, 0, 1, 5000, CollisionGeometry.convexRegular(3, 50) );
 		
 			sandbox.addRigidBody(this._rigidBody);
 			_rigidBody.addForce(new Friction(10.0));
-			//_rigidBody.addForce(new Gravity(300.0));
+			//_rigidBody.addForce(new Gravity(1500.0));
 			
 			
 			
@@ -109,6 +108,8 @@
 				mouseUpPosition.subtract(mouseDown);
 				mouseUpPosition.subtract(_rigidBody.position);
 				
+				
+				mouseUpPosition.scale(0.5);
 				_rigidBody.addImpulseAtPoint(mouseUpPosition, mouseDown );
 				
 				

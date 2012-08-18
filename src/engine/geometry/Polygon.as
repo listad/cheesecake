@@ -2,20 +2,15 @@
 	import flash.display.Graphics;
 	public class Polygon {
 		// static
-		public static function rect(width:Number, height:Number):Polygon {
-			return new Polygon(
-			
-				new <Vector2D>[
+		public static function rect(width:Number, height:Number):Vector.<Vector2D> {
+			return new <Vector2D>[
 					new Vector2D( -0.5 * width, -0.5 * height),
 					new Vector2D(  0.5 * width, -0.5 * height),
 					new Vector2D(  0.5 * width,  0.5 * height),
-					new Vector2D( -0.5 * width,  0.5 * height)
-				]
-			
-			);
+					new Vector2D( -0.5 * width,  0.5 * height)	]
 		}
 		
-		public static function convexRegular(sides:int, radius:int):Polygon {
+		public static function convexRegular(sides:int, radius:int):Vector.<Vector2D> {
 			var corner:Number = 2.0 * Math.PI / sides;
 			var verticesCoords:Vector.<Vector2D> = new Vector.<Vector2D>();
 			
@@ -25,11 +20,13 @@
 				verticesCoords[i] = new Vector2D(x, y);
 			}
 			
-			return new Polygon(verticesCoords);
+			return verticesCoords;
 		}
 		
-		
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		// m
+		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
 		private var _vertices:Vector.<Vector2D>;
 		private var _edges:Vector.<Vector2D> = new Vector.<Vector2D>();
 		
@@ -48,7 +45,7 @@
 		
 		//DEBUG!!!
 		
-		public function draw(graphics:Graphics, lineThickness:Number = 2.0, lineColor:uint = 0x660000, lineAlpha:Number = 0.9, fillColor:uint = 0xFFFFFF, fillAlpha = 0.75):void {
+		public function draw(graphics:Graphics, lineThickness:Number = 1.5, lineColor:uint = 0x660000, lineAlpha:Number = 0.9, fillColor:uint = 0xFFFFFF, fillAlpha:Number = 1.0):void {
 			graphics.lineStyle(lineThickness, lineColor, lineAlpha);
 			graphics.beginFill(fillColor, fillAlpha);
 			graphics.moveTo(this._vertices[0].x, this._vertices[0].y);
@@ -57,7 +54,7 @@
 				
 			}
 			graphics.lineTo(this._vertices[0].x, this._vertices[0].y);
-			
+			graphics.endFill();
 			
 		}
 	}

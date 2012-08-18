@@ -99,10 +99,17 @@
 			for (var i:int = 0; i < this._iterations; i++) {
 				//physics update
 				//
+				var actives:Vector.<RigidBody> = new Vector.<RigidBody>();
+				
 				for (var j:int = 0; j < dynamicsNum; j++) {
 					var rigidBody:RigidBody = this._dynamicBodies[j];
-					rigidBody.physicsUpdate(ddt);
 					rigidBody.quadtreeVisible = true;
+					rigidBody.change = false;
+					
+					if(rigidBody.sleeps == false) {
+						rigidBody.physicsUpdate(ddt);
+						actives.push(rigidBody);
+					}
 				}
 				////collisions, without quadtrees
 				//for (j = 0; j < dynamicsNum; j++) {
@@ -117,8 +124,9 @@
 				//	
 				//}
 				
-				for (j = 0; j < dynamicsNum; j++) {
-					rigidBody = this._dynamicBodies[j];
+				var activesNum:int = actives.length;
+				for (j = 0; j < activesNum; j++) {
+					rigidBody = actives[j];
 					rigidBody.quadtreeVisible = false;
 					
 					var cells:Vector.<Cell> = _quadtrees.getCellsNearBody(rigidBody);
@@ -135,12 +143,12 @@
 				
 				for (j = 0; j < dynamicsNum; j++) {
 					rigidBody = this._dynamicBodies[j];
-					rigidBody.repush();
+					if(rigidBody.change) rigidBody.repush();
 				}
-				for (j = 0; j < staticsNum; j++) {
-					rigidBody = this._staticBodies[j];
-					rigidBody.repush();
-				}
+				//for (j = 0; j < staticsNum; j++) {
+				//	rigidBody = this._staticBodies[j];
+				//	rigidBody.repush();
+				//}
 			
 				
 			}
@@ -150,10 +158,10 @@
 					rigidBody = this._dynamicBodies[j];
 					rigidBody.debug(this._dynamicGraphics);
 			}
-			for (j = 0; j < staticsNum; j++) {
-					rigidBody = this._staticBodies[j];
-					rigidBody.debug(this._dynamicGraphics);
-			}
+			//for (j = 0; j < staticsNum; j++) {
+			//		rigidBody = this._staticBodies[j];
+			//		rigidBody.debug(this._dynamicGraphics);
+			//}
 			
 			//stop();
 			
@@ -186,9 +194,13 @@
 		//polygon versus polygon
 		private function pvpCollision(bodyA:RigidBody, bodyB:RigidBody):void {
 			
-				
+			
 			var projectionDistance:Number = Number.MAX_VALUE;
 			var mtv:Vector2D;
+			
+			var projA:Projection;//test
+			var projB:Projection;//test
+			var index:int;
 			
 			var collidingA:RigidBody;
 			var collidingB:RigidBody;
@@ -196,11 +208,11 @@
 			//BODY A
 			var matrix:Matrix2D = bodyA.matrix;
 			
-			var edges:Vector.<Vector2D> = bodyA.collisionGeometry.edges;
+			var edges:Vector.<Vector2D> = bodyA.collisionGeometry.globalEdges//edges;
 			
 			var length:int = edges.length;
 			for(var i:int = 0; i < length; i++) {
-				var edge:Vector2D = matrix.transformVector2D(edges[i]);
+				var edge:Vector2D = edges[i]////matrix.transformVector2D(edges[i]);
 				var axis:Vector2D = edge.normal;
 				axis.normalize();
 				
@@ -220,6 +232,9 @@
 				if(distance < projectionDistance) {
 					projectionDistance = distance;
 					mtv = axis;
+					projA = projectionA;//test
+					projB = projectionB;//test
+					index = 1;
 					
 					if (projectionA.isFurther(projectionB)) {
 						collidingA = bodyB;
@@ -234,11 +249,11 @@
 			//BODY B
 			matrix = bodyB.matrix;
 			
-			edges = bodyB.collisionGeometry.edges;
+			edges = bodyB.collisionGeometry.globalEdges;
 			
 			var length = edges.length;
 			for(var i = 0; i < length; i++) {
-				edge = matrix.transformVector2D(edges[i]);
+				edge = edges[i];//matrix.transformVector2D(edges[i]);
 				axis = edge.normal;
 				axis.normalize();
 				
@@ -258,6 +273,9 @@
 				if(distance < projectionDistance) {
 					projectionDistance = distance;
 					mtv = axis;
+					projA = projectionA;//test
+					projB = projectionB;//test
+					index = 2;
 					
 					if (projectionA.isFurther(projectionB)) {
 						collidingA = bodyB;
@@ -276,8 +294,20 @@
 			//_dynamicGraphics.lineTo(bodyB.xPosition, bodyB.yPosition);
 			
 			
-			new Collision(mtv, projectionDistance, collidingA, collidingB);
+			//new Collision(mtv, projectionDistance, collidingA, collidingB);
 			
+			//if (index == 2) projA.draw(this._dynamicGraphics, 4.0, 0xFF0000, 0.5);//test
+			//if (index == 1) projB.draw(this._dynamicGraphics, 4.0, 0x00FF00, 0.5);//test
+			projectionDistance += 0.001;
+			
+			
+			var massratio:Number;
+			var masssum:Number = collidingA.mass + collidingB.mass;
+			var collidingARatio:Number = 1.0 - masssum / collidingA.mass;
+			var collidingBRatio:Number = 1.0 - masssum / collidingB.mass;
+			
+			collidingA.position = collidingA.position.add( Vector2D.scale(mtv, 0.5 * projectionDistance)  );
+			collidingB.position = collidingB.position.subtract( Vector2D.scale(mtv, 0.5 * projectionDistance)  );
 			
 			
 		}

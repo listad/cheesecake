@@ -46,6 +46,11 @@
 			this._y /= scalar;
 		}
 		
+		public function scale(scalar:Number):void {
+			this._x *= scalar;
+			this._y *= scalar;
+		}
+		
 		public function normalize():void {
 			this.divide(this.length);
 		}
@@ -76,7 +81,7 @@
 		public function get y():Number { return this._y; }
 		public function set y(value:Number):void { this._y = value; }
 		
-		public function draw(graphics:Graphics, width:Number = 8.0, height:Number = 8.0, lineThickness:Number = 1.0, lineColor:uint = 0x440000, lineAlpha:Number = 0.5, fillColor:uint = 0xFFAAAA, fillAlpha = 0.25):void {
+		public function draw(graphics:Graphics, width:Number = 2.0, height:Number = 2.0, lineThickness:Number = 0.5, lineColor:uint = 0x440000, lineAlpha:Number = 0.5, fillColor:uint = 0xFFAAAA, fillAlpha:Number = 0.25):void {
 			graphics.lineStyle(lineThickness, lineColor, lineAlpha);
 			graphics.beginFill(fillColor, fillAlpha);
 			graphics.drawRect(-0.5 * width, -0.5 * height, width, height);
@@ -86,5 +91,13 @@
 			graphics.moveTo(0.0, -0.5 * height); graphics.lineTo(0.0, -2.0 * height);
 			graphics.endFill();
 		}
+		
+		public function drawGlobal(graphics:Graphics, radius:Number = 4.0, lineThickness:Number = 1.0, lineColor:uint = 0x440000, lineAlpha:Number = 0.5, fillColor:uint = 0xFFAAAA, fillAlpha:Number = 0.25):void {
+			graphics.lineStyle(lineThickness, lineColor, lineAlpha);
+			graphics.beginFill(fillColor, fillAlpha);
+			graphics.drawCircle(this._x, this._y, radius);
+			graphics.endFill();
+		}
+		
 	}
 }
