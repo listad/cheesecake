@@ -121,6 +121,12 @@
 			this._forces.push(force);
 		}
 		
+		public function getVelocityAtPoint(point:Vector2D):Vector2D {
+			var tangent:Vector2D = point.subtract( position ).normal;
+			tangent.normalize();
+			return velocity.plus(tangent.scale(this.angularVelocity));
+		}
+		
 		//TODO: removeForce
 		
 		public function toLocal(vin:Vector2D, vout:Vector2D = null):Vector2D {
@@ -166,6 +172,8 @@
 		public function set xVelocity(value:Number):void { this._state[VELOCITY_X_INDEX] = value; }
 		public function get yVelocity():Number { return this._state[VELOCITY_Y_INDEX]; }
 		public function set yVelocity(value:Number):void { this._state[VELOCITY_Y_INDEX] = value; }
+		
+		public function get velocity():Vector2D { return new Vector2D(this._state[VELOCITY_X_INDEX], this._state[VELOCITY_Y_INDEX]); } 
 		
 		public function get angularVelocity():Number { return this._state[ANGULAR_VELOCITY_INDEX]; }
 		public function set angularVelocity(value:Number):void { this._state[ANGULAR_VELOCITY_INDEX] = value; }
