@@ -3,7 +3,7 @@
 	import flash.display.Graphics;
 	
 	public class Projection {
-		private static const EPSILON:Number = 2;
+		private static const EPSILON:Number = 0.0000001;
 		
 		private var _min:Number;
 		private var _max:Number;

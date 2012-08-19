@@ -46,9 +46,10 @@
 			this._y /= scalar;
 		}
 		
-		public function scale(scalar:Number):void {
+		public function scale(scalar:Number):Vector2D {
 			this._x *= scalar;
 			this._y *= scalar;
+			return this;
 		}
 		
 		public function normalize():void {
@@ -72,7 +73,7 @@
 			return this._x * this._x + this._y * this._y;
 		}
 		
-		public function get normal():Vector2D {
+		public function get perp():Vector2D {
 			return new Vector2D( -this._y, this._x);
 		}
 		
@@ -80,6 +81,10 @@
 		public function set x(value:Number):void { this._x = value; }
 		public function get y():Number { return this._y; }
 		public function set y(value:Number):void { this._y = value; }
+		
+		public function clone():Vector2D {
+			return new Vector2D(this._x, this._y);
+		}
 		
 		public function draw(graphics:Graphics, width:Number = 2.0, height:Number = 2.0, lineThickness:Number = 0.5, lineColor:uint = 0x440000, lineAlpha:Number = 0.5, fillColor:uint = 0xFFAAAA, fillAlpha:Number = 0.25):void {
 			graphics.lineStyle(lineThickness, lineColor, lineAlpha);

@@ -111,8 +111,15 @@
 		}
 		
 		public function addImpulseAtPoint(impulse:Vector2D, point:Vector2D):void {
+			//var clone:Vector2D = point.clone();
+			//clone.normalize();
+			
+			//var d:Number = impulse.dot(clone);
+			
+			//clone.scale(d);
+			
 			this.addImpulse(impulse);
-			this.addTorque(point.normal.dot(impulse));
+			this.addTorque(point.perp.dot(impulse));
 		}
 		
 		public function addForce(force:IForce):void {
@@ -122,9 +129,9 @@
 		}
 		
 		public function getVelocityAtPoint(point:Vector2D):Vector2D {
-			var tangent:Vector2D = point.subtract( position ).normal;
+			var tangent:Vector2D = point.subtract( position ).perp;
 			tangent.normalize();
-			return velocity.plus(tangent.scale(this.angularVelocity));
+			return velocity.add(tangent.scale(this.angularVelocity));
 		}
 		
 		//TODO: removeForce
