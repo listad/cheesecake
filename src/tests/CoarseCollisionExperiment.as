@@ -18,20 +18,33 @@
 		private var _mouseDownPosition:Vector2D = new Vector2D();
 		private var _mouseDown:Boolean = false;
 		var sandbox:PhysicsSandbox;
+		
+		private var _bodies:Vector.<RigidBody> = new Vector.<RigidBody>();
+		
 		public function CoarseCollisionExperiment(stage:Stage) {
 			stage.frameRate = 60;
 			
 			sandbox = new PhysicsSandbox();
 			
+			
 			super.addChild(sandbox);
 			
 			var block:RigidBody;
-			block = new RigidBody(100 + Math.random()*800, Math.random()*100, 0, 1, 5000, CollisionGeometry.convexRegular(3, 25+25*Math.random() ) );
-				block.addForce(new Friction(0.25));
-				block.addForce(new Gravity(100.0))
+			for(var i:int = 0; i < 30; i++) {
+				
+			
+			block = new RigidBody(50 + Math.random()*900, Math.random()*100, 0.4, 1, 500, 0.0, 0.0, CollisionGeometry.convexRegular(3+Math.round(Math.random()*2), 10+20*Math.random() ), true );
+
+				block.addForce(new Friction(0.1));
+				block.addForce(new Gravity(2000.0))
 				sandbox.addRigidBody(block);
+				_bodies.push(block);
+				//block.addImpulse( new Vector2D(0, 150) );
 			
 					
+			}
+			//
+			
 				
 				
 				
@@ -51,15 +64,37 @@
 			//	sandbox.addRigidBody(block);
 			//}
 			
-			block = new RigidBody(250, 500, 0.25, 1000000000, 5000, CollisionGeometry.rect(500, 20) );
+			block = new RigidBody(333, 400, 0, 999991100000, 1100000, 0.0, 0.0, CollisionGeometry.rect(323, 20), true );
+			//block.addForce(new Friction(0.1));
 			sandbox.addRigidBody(block);
 			
-			block = new RigidBody(750, 750, -0.25, 1000000000, 5000, CollisionGeometry.rect(500, 20) );
+			block = new RigidBody(666, 400, 0, 999991100000, 1100000, 0.0, 0.0, CollisionGeometry.rect(323, 20), true );
+			//block.addForce(new Friction(0.1));
+			sandbox.addRigidBody(block);
+			
+			block = new RigidBody(250, 600, 0.0, 999991100000, 1100000, 0.0, 0.0, CollisionGeometry.rect(240, 20), true );
+			//block.addForce(new Friction(0.1));
+			sandbox.addRigidBody(block);
+			block = new RigidBody(500, 600, 0.0, 999991100000, 1100000, 0.0, 0.0, CollisionGeometry.rect(240, 20), true );
+			//block.addForce(new Friction(0.1));
+			sandbox.addRigidBody(block);
+			block = new RigidBody(750, 600, 0.0, 999991100000, 1100000, 0.0, 0.0, CollisionGeometry.rect(240, 20), true );
+			//block.addForce(new Friction(0.1));
+			sandbox.addRigidBody(block);
+			
+			block = new RigidBody(333, 800, 0, 999991100000, 1100000, 0.0, 0.0, CollisionGeometry.rect(323, 20), true );
+			//block.addForce(new Friction(0.1));
+			sandbox.addRigidBody(block);
+			
+			block = new RigidBody(666, 800, 0, 999991100000, 1100000, 0.0, 0.0, CollisionGeometry.rect(323, 20), true );
+			//block.addForce(new Friction(0.1));
 			sandbox.addRigidBody(block);
 			
 			
 			
 			
+			
+			sandbox.run();
 			
 			//this._rigidBody = new RigidBody(0, 0, 0, 1, 5000, CollisionGeometry.convexRegular(3, 50) );
 		
@@ -70,23 +105,23 @@
 			
 			
 			
-			sandbox.run();
+			
 			
 			//_rigidBody.addEventListener(MouseEvent.MOUSE_DOWN, this.mouseDownEventListener);
 			//stage.addEventListener(MouseEvent.MOUSE_UP, this.mouseUpEventListener);
-			//super.addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			super.addEventListener(Event.ENTER_FRAME, onEnterFrame);
 			
 		}
 		
 		public function onEnterFrame(e:Event):void {
-			if(Math.random() < 0.01) {
-				var block:RigidBody;
-					
-					
-				block = new RigidBody(100 + Math.random()*800, Math.random()*100, 0, 1, 5000, CollisionGeometry.convexRegular(3+int(Math.random()*4), 25+25*Math.random() ) );
-				block.addForce(new Friction(0.25));
-				block.addForce(new Gravity(10.0))
-				sandbox.addRigidBody(block);
+			for(var i:int = 0; i < _bodies.length; i++) {
+				if(_bodies[i].yPosition > 1000) {
+				_bodies[i].yPosition = Math.random()*100;
+				_bodies[i].xPosition = 50 + Math.random()*900;
+				_bodies[i].xVelocity = 0;
+				_bodies[i].yVelocity = 0;
+				}
+				
 			}
 		}
 		

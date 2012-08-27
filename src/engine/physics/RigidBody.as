@@ -37,8 +37,12 @@
 		private var _forces:Vector.<IForce> = new Vector.<IForce>;
 		private var _force:Vector2D = new Vector2D(); //тёмная магия
 		private var _mass:Number = 1.0;
+		private var _inverseMass:Number = 1.0;
 		private var _torque:Number = 0.0;
-		private var _inertiaTensor:Number = 5000.0;
+		private var _inertiaTensor:Number = 1000.0;
+		private var _inverseInertiaTensor:Number = 0.001;
+		private var _elasticity:Number = 0.5;
+		private var _friction:Number = 0.0;
 		
 		private var _collisionGeometry:CollisionGeometry;
 		
@@ -57,21 +61,28 @@
 		private var __k3:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
 		private var __k4:Vector.<Number> = new Vector.<Number>(STATE_LENGTH);
 		
+		//debug
+		private var _debug:Boolean;
+		
 		// Constructor
 		
-		public function RigidBody(x:Number, y:Number, angle:Number, mass:Number = 1.0, inertiaTensor:Number = 100000.0, collisionGeometry:CollisionGeometry = null) {
+		public function RigidBody(x:Number, y:Number, angle:Number, mass:Number = 1.0, inertiaTensor:Number = 100000.0, elasticity:Number = 0.25, friction:Number = 0.0, collisionGeometry:CollisionGeometry = null, debug:Boolean = false) {
 			this.xPosition = x;
 			this.yPosition = y;
 			this.angle = angle;
 			this._matrix.angle = this.angle;
 			
-			this._mass = mass;
-			this._inertiaTensor = inertiaTensor;
+			this.mass = mass;
+			this.inertiaTensor = inertiaTensor;
+			this._elasticity = elasticity;
+			this._friction = friction;
 			
 			this._collisionGeometry = collisionGeometry;
 			this._collisionGeometry.body = this;
 			
 			this._sleeps = true;//FIX IT
+			
+			this._debug = debug;
 		}
 		
 		public function init(quadtrees:Quadtrees):void {
@@ -79,7 +90,7 @@
 			
 			this._quadcell = this._quadtrees.push(this);
 			
-			if (this._collisionGeometry) this._collisionGeometry.draw(super.graphics);
+			if (this._debug && this._collisionGeometry) this._collisionGeometry.draw(super.graphics, 1.0, 0x660000, 0.5, 0x330000, 0.1);
 			this.position.draw(super.graphics);
 			
 			//test:
@@ -144,6 +155,11 @@
 			return this._matrix.transformVector2D(vin, vout, this.xPosition, this.yPosition);
 		}
 		
+		public function vectorToGlobal(vin:Vector2D, vout:Vector2D = null):Vector2D {
+			return this._matrix.transformVector2D(vin, vout);
+		}
+		
+		
 		public function repush():void {
 			this._quadcell = this._quadcell.repush(this);
 		}
@@ -177,6 +193,7 @@
 		
 		public function get xVelocity():Number { return this._state[VELOCITY_X_INDEX]; }
 		public function set xVelocity(value:Number):void { this._state[VELOCITY_X_INDEX] = value; }
+		
 		public function get yVelocity():Number { return this._state[VELOCITY_Y_INDEX]; }
 		public function set yVelocity(value:Number):void { this._state[VELOCITY_Y_INDEX] = value; }
 		
@@ -188,13 +205,32 @@
 		public function get angle():Number { return this._state[ANGLE_INDEX]; }
 		public function set angle(value:Number):void { this._state[ANGLE_INDEX] = value; }
 		
+		//mass
 		public function get mass():Number { return this._mass; }
-		public function set mass(value:Number):void { this._mass = value; }
-		public function get inertiaTensor():Number { return this._inertiaTensor; }
-		public function set inertiaTensor(value:Number):void { this._inertiaTensor = value; }
+		public function get inverseMass():Number { return this._inverseMass; }
+		public function set mass(value:Number):void {
+			this._mass = value;
+			this._inverseMass = 1.0 / value;
+		}
 		
+		//inertia tensor
+		public function get inertiaTensor():Number { return this._inertiaTensor; }
+		public function get inverseInertiaTensor():Number { return this._inverseInertiaTensor; }
+		public function set inertiaTensor(value:Number):void {
+			this._inertiaTensor = value;
+			this._inverseInertiaTensor = 1.0 / value;
+		}
+		
+		//elasticity
+		public function get elasticity():Number { return this._elasticity; }
+		
+		//friction
+		public function get friction():Number { return this._friction; }
+		
+		//rotation matrix
 		public function get matrix():Matrix2D { return this._matrix; }
 		
+		//collision geometry
 		public function get collisionGeometry():CollisionGeometry { return this._collisionGeometry; }
 		
 		//quadtrees
@@ -202,15 +238,13 @@
 		public function get quadtreeVisible():Boolean { return this._quadtreeVisible; }
 		public function set quadtreeVisible(value:Boolean):void { this._quadtreeVisible = value; }
 		
-		//TODO: set
-		
 		// Internal
 		
-		internal function applyForce(force:Vector2D):void {
+		public function applyForce(force:Vector2D):void {
 			this._force.add(force);
 		}
 		
-		internal function applyTorque(torque:Number):void {
+		public function applyTorque(torque:Number):void {
 			this._torque += torque;
 		}
 		
@@ -231,12 +265,12 @@
 			for (i = 0; i < 6; i++) {
 				//test:
 				var value:Number = dt * (this.__k1[i] + 2.0 * this.__k2[i] + 2.0 * this.__k3[i] + this.__k4[i]) / 6.0;
-				var abs:Number = value;
-				if (value < 0) abs = -value;
-				if (abs < 0.00001) value = 0.0;
+				//var abs:Number = value;
+				//if (value < 0) abs = -value;
+				//if (abs < 0.001) value = 0.0;
 				
 				origin[i] += value;
-				if (value != 0.0) change = true;
+				//if (value != 0.0) change = true;
 			}
 			this.state = origin;
 			
@@ -244,13 +278,13 @@
 			
 			
 			
-			if (change) {
+			//if (change) {
 				this._matrix.angle = this.angle;
 				this._quadcell = this._quadcell.repush(this);
 				this.outdate();
-			} else {
+			//} else {
 				//this._sleeps = true;
-			}
+			//}
 		}
 		
 		// Private
@@ -291,18 +325,12 @@
 		// DEBUG
 		
 		public function debug(graphics:Graphics):void {
-			//super.graphics.clear();
-			
 			super.x = xPosition;
 			super.y = yPosition;
 			super.rotation = this.angle * 180.0 / Math.PI;
 			
-			//var rect:Rectangle2D = this.bounds;
-			//rect.draw(graphics);
 			
-			//this._collisionGeometry.draw(super.graphics, 1.5, 0x660000, 0.9, this._sleeps?0xFFFFFF:0xFF0000, 0.75)
-			
-			//this._quadcell.draw(graphics);//
+			//this._quadcell.draw(graphics, 1.0, 0x003300, 0.25, 0x000000, 0.0);//
 			//this.bound();
 		}
 	}

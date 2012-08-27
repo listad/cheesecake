@@ -29,7 +29,7 @@
 		
 		public function PhysicsSandbox() {
 			super.addChild(_textField);
-			_textField.text = "test";
+			//_textField.text = "test";
 			
 			var temp:Sprite = new Sprite();
 			super.addChild(temp);
@@ -46,6 +46,8 @@
 			
 			_quadtrees = new Quadtrees(_staticGraphics);
 			super.mouseEnabled = false;
+			
+			this.run();
 		}
 		
 		// Public
@@ -89,7 +91,8 @@
 			
 			var dt:Number = Time.time - this._lastUpdate;
 			this._lastUpdate = Time.time;
-			
+			//dt = 1 / 60;
+			if (dt == 0) return;
 			_textField.text = "fps: " + Math.round(1 / dt);
 			
 			var dynamicsNum:int = this._dynamicBodies.length;
@@ -145,10 +148,6 @@
 					rigidBody = this._dynamicBodies[j];
 					if(rigidBody.change) rigidBody.repush();
 				}
-				//for (j = 0; j < staticsNum; j++) {
-				//	rigidBody = this._staticBodies[j];
-				//	rigidBody.repush();
-				//}
 			
 				
 			}
@@ -168,51 +167,43 @@
 		}
 		
 		private function checkCollision(bodyA:RigidBody, bodyB:RigidBody):void {
-			//_dynamicGraphics.lineStyle(1.0, 0xFF0000, 1);
-			//_dynamicGraphics.moveTo(bodyA.xPosition, bodyA.yPosition);
-			//_dynamicGraphics.lineTo(bodyB.xPosition, bodyB.yPosition);
-			
 			if (bodyA.bounds.collide(bodyB.bounds)) {
-				//_dynamicGraphics.lineStyle(4.0, 0xFF0000, 1);
-				//_dynamicGraphics.moveTo(bodyA.xPosition, bodyA.yPosition);
-				//_dynamicGraphics.lineTo(bodyB.xPosition, bodyB.yPosition);
-				
-				//bodyA.bounds.draw(super.graphics, 2.0, 0xFF0000, 0.5, 0xFF0000, 0.1);//draw debug graphics
-				//bodyB.bounds.draw(super.graphics, 2.0, 0xFF0000, 0.5, 0xFF0000, 0.1);//draw debug graphics
-				
-				
-				//step2
-				
-				//SAT
-				pvpCollision(bodyA, bodyB);
-				
-				
-				
-			}//
+				//bodyA.bounds.draw(super.graphics, 1.0, 0x330000, 0.02, 0xFF0000, 0.0);//draw debug graphics
+				//bodyB.bounds.draw(super.graphics, 1.0, 0x330000, 0.02, 0xFF0000, 0.0);//draw debug graphics
+				this.pvpCollision(bodyA, bodyB);
+			}
 		}
 		
 		//polygon versus polygon
 		private function pvpCollision(bodyA:RigidBody, bodyB:RigidBody):void {
-			
 			
 			var projectionDistance:Number = Number.MAX_VALUE;
 			var mtv:Vector2D;
 			
 			var projA:Projection;//test
 			var projB:Projection;//test
-			var index:int;
 			
 			var collidingA:RigidBody;
 			var collidingB:RigidBody;
 			
-			//BODY A
-			var matrix:Matrix2D = bodyA.matrix;
+			//
 			
-			var edges:Vector.<Vector2D> = bodyA.collisionGeometry.globalEdges//edges;
+			var edgesA:Vector.<Vector2D> = bodyA.collisionGeometry.globalEdges;
+			var edgesB:Vector.<Vector2D> = bodyB.collisionGeometry.globalEdges;
+			var edgesANum:int = edgesA.length;
+			var edgesBNum:int = edgesB.length;
+			var edgesNum:int = edgesANum + edgesBNum;
 			
-			var length:int = edges.length;
-			for(var i:int = 0; i < length; i++) {
-				var edge:Vector2D = edges[i]////matrix.transformVector2D(edges[i]);
+			
+			
+			//var length:int = edgesA.length;
+			for (var i:int = 0; i < edgesNum; i++) {
+				if (i < edgesANum) {
+					var edge:Vector2D = edgesA[i];
+				} else {
+					edge = edgesB[i - edgesANum];
+				}
+				
 				var axis:Vector2D = edge.perp;
 				axis.normalize();
 				
@@ -232,15 +223,13 @@
 				if(distance < projectionDistance) {
 					projectionDistance = distance;
 					mtv = axis;
-					projA = projectionA;//test
-					projB = projectionB;//test
-					index = 1;
+					
 					
 					if (projectionA.isFurther(projectionB)) {
-						projA = projectionB;//test
-						projB = projectionA;//test
 						collidingA = bodyB;
 						collidingB = bodyA;
+						projA = projectionB;//test
+						projB = projectionA;//test
 					} else {
 						collidingA = bodyA;
 						collidingB = bodyB;
@@ -250,63 +239,9 @@
 				}
 			}
 			
-			//BODY B
-			matrix = bodyB.matrix;
-			
-			edges = bodyB.collisionGeometry.globalEdges;
-			
-			var length = edges.length;
-			for(var i = 0; i < length; i++) {
-				edge = edges[i];//matrix.transformVector2D(edges[i]);
-				axis = edge.perp;
-				axis.normalize();
-				
-				
-				projectionA = new Projection(axis, bodyA)
-				projectionB = new Projection(axis, bodyB)
-				
-				distance = projectionA.distance(projectionB);
-				
-				if (distance > 0) {
-					return;
-				} else {
-					distance = -distance;
-				}
-				
-				
-				if(distance < projectionDistance) {
-					projectionDistance = distance;
-					mtv = axis;
-					
-					index = 2;
-					
-					if (projectionA.isFurther(projectionB)) {
-						projA = projectionB;//test
-						projB = projectionA;//test
-						collidingA = bodyB;
-						collidingB = bodyA;
-					} else {
-						collidingA = bodyA;
-						collidingB = bodyB;
-						projA = projectionA;//test
-						projB = projectionB;//test
-					}
-				}
-			}
-			
-			//collision = true
-			
-			//_dynamicGraphics.lineStyle(10.0, 0xFF0000, 1);
-			//_dynamicGraphics.moveTo(bodyA.xPosition, bodyA.yPosition);
-			//_dynamicGraphics.lineTo(bodyB.xPosition, bodyB.yPosition);
 			
 			
-			//new Collision(mtv, projectionDistance, collidingA, collidingB);
-			
-			
-			
-			
-			var points:Vector.<Vector2D> = projA.minVertices;
+			//var points:Vector.<Vector2D> = projA.minVertices;
 			//for (i = 0; i < points.length; i++) {
 			//	points[i].drawGlobal(this._dynamicGraphics, 6, 1.0, 0xFF0000);
 			//}
@@ -320,38 +255,87 @@
 			var masssum:Number = collidingA.mass + collidingB.mass;
 			
 			
-			var collidingARatio:Number = 2 * projectionDistance * (1.0 - collidingA.mass / masssum);
-			var collidingBRatio:Number = 2 * projectionDistance * (1.0 - collidingB.mass / masssum);
+			var collidingARatio:Number = projectionDistance * (1.0 - collidingA.mass / masssum);
+			var collidingBRatio:Number = projectionDistance * (1.0 - collidingB.mass / masssum);
 			
-			collidingA.position = collidingA.position.add( Vector2D.scale(mtv, collidingARatio)  );
-			collidingB.position = collidingB.position.add( Vector2D.scale(mtv, -collidingBRatio)  );
+			collidingA.position = collidingA.position.add( Vector2D.scale(mtv, collidingARatio) );
+			collidingB.position = collidingB.position.add( Vector2D.scale(mtv, -collidingBRatio) );
 			
-			var vertex:Vector2D;
+			//fixme. contact += mtv * collidingARatio
 			
-			if (projA.maxVertices.length == 1) {
-				vertex = projA.minVertices[0];
-			} else {
-				vertex = projB.maxVertices[0];
+			var contact:Vector2D;
+			
+			if (projA.maxVertices.length > 1) contact = projB.maxVertices[0];
+			else contact = projA.minVertices[0];
+			
+			//contact.drawGlobal(this._dynamicGraphics, 6, 1.0, 0xFF0000);
+			
+			var normal:Vector2D = mtv;
+			
+			
+				var inverseMassSum:Number = bodyA.inverseMass + bodyB.inverseMass;
+			///*
+			var contactA:Vector2D = Vector2D.subtract( contact, bodyA.position );
+			var contactB:Vector2D = Vector2D.subtract( contact, bodyB.position );
+			
+			var contactPerpindicularA:Vector2D = contactA.perp;
+			var contactPerpindicularB:Vector2D = contactB.perp;
+			
+			var contactPerpindicularDotA:Number = contactPerpindicularA .dot( normal );
+			var contactPerpindicularDotB:Number = contactPerpindicularB .dot( normal );
+			
+			var denominator:Number = normal.dot( Vector2D.scale( normal , inverseMassSum) );
+			denominator += contactPerpindicularDotA * contactPerpindicularDotA * bodyA.inverseInertiaTensor;
+			denominator += contactPerpindicularDotB * contactPerpindicularDotB * bodyB.inverseInertiaTensor;
+			
+			var velocityAtContactA:Vector2D = Vector2D.scale( contactPerpindicularA , bodyA.angularVelocity ) .add( bodyA.velocity );
+			var velocityAtContactB:Vector2D = Vector2D.scale( contactPerpindicularB , bodyB.angularVelocity ) .add( bodyB.velocity );
+			var relativeVelocity:Vector2D = velocityAtContactA .subtract( velocityAtContactB );
+			
+			var relativeVelocityNormDot:Number = relativeVelocity .dot( normal );
+			
+			var elasticity:Number = 1.0 + ( bodyA.elasticity + bodyB.elasticity ) * 0.5;
+			
+			var impulse:Number = elasticity * relativeVelocityNormDot / denominator;
+			
+			var dlvA:Vector2D = Vector2D.scale( normal , -impulse * bodyA.inverseMass );
+			var davA:Number = contactPerpindicularA .dot ( Vector2D.scale( normal, -impulse ) ) * bodyA.inverseInertiaTensor;
+			var dlvB:Vector2D = Vector2D.scale( normal , impulse * bodyB.inverseMass );
+			var davB:Number = contactPerpindicularB .dot ( Vector2D.scale( normal, impulse ) ) * bodyB.inverseInertiaTensor;
+			//*/
+
+			//FRICTION:
+			///*
+			var friction:Number = ( bodyA.friction + bodyB.friction ) * 0.5;
+			if(friction > 0.0) {
+				var tangent:Vector2D = mtv.perp;
+				
+				var contactPerpTangentDotA:Number = contactPerpindicularA .dot( tangent );
+				var contactPerpTangentDotB:Number = contactPerpindicularB .dot( tangent );
+				
+				denominator = tangent.dot( Vector2D.scale( tangent, inverseMassSum ) ); 
+				denominator += contactPerpTangentDotA * contactPerpTangentDotA * bodyA.inverseInertiaTensor + contactPerpTangentDotB * contactPerpTangentDotB * bodyB.inverseInertiaTensor;
+				
+				var rvTangent:Number = relativeVelocity.dot( tangent );
+				
+				impulse = -rvTangent / denominator * friction;
+				
+				dlvA.add(Vector2D.scale( tangent, impulse * bodyA.inverseMass ));
+				davA += contactPerpindicularA .dot( Vector2D.scale( tangent, impulse ) ) * bodyA.inverseInertiaTensor;
+				dlvB.add(Vector2D.scale( tangent, -impulse * bodyB.inverseMass ));
+				davB += contactPerpindicularB .dot( Vector2D.scale( tangent, -impulse ) ) * bodyB.inverseInertiaTensor;
 			}
 			
-			vertex.drawGlobal(this._dynamicGraphics, 6, 1.0, 0xFF0000);
+			//APPLY:
 			
-			var m1:Number = collidingA.mass;
-			var m2:Number = collidingB.mass;
-			var u1:Vector2D = collidingA.getVelocityAtPoint( Vector2D.subtract(vertex, collidingA.position) );
-			var u2:Vector2D = collidingB.getVelocityAtPoint( Vector2D.subtract(vertex, collidingB.position) );
+			bodyA.xVelocity += dlvA.x;
+			bodyA.yVelocity += dlvA.y;
+			bodyA.angularVelocity += davA;
 			
-			var v1:Vector2D = Vector2D.scale(u1, m1 - m2).add( Vector2D.scale(u2, 2 * m2)  );
-			v1.divide(m1 + m2);
-			
-			var v2:Vector2D = Vector2D.scale(u2, m2 - m1).add( Vector2D.scale(u1, 2 * m1)  );
-			v2.divide(m1 + m2);
-			
-			collidingA.xVelocity = collidingA.yVelocity = collidingA.angularVelocity = 0;
-			collidingA.addImpulseAtPoint(v1, Vector2D.subtract(vertex, collidingA.position));
-			
-			collidingB.xVelocity = collidingB.yVelocity = collidingB.angularVelocity = 0;
-			collidingB.addImpulseAtPoint(v2, Vector2D.subtract(vertex, collidingB.position));
+			bodyB.xVelocity += dlvB.x;
+			bodyB.yVelocity += dlvB.y;
+			bodyB.angularVelocity += davB;
+
 			
 		}
 	}//class

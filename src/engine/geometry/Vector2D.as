@@ -77,6 +77,12 @@
 			return new Vector2D( -this._y, this._x);
 		}
 		
+		public function get normal():Vector2D {
+			var p:Vector2D = this.perp;
+			p.normalize();
+			return p;
+		}
+		
 		public function get x():Number { return this._x; }
 		public function set x(value:Number):void { this._x = value; }
 		public function get y():Number { return this._y; }

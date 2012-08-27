@@ -5,7 +5,7 @@ package {
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import tests.CoarseCollisionExperiment;
-	import tests.MikaTest;
+	import tests.TankExperiment;
 	import tests.ProjectileMotionExperiment;
 	
 	[SWF(width = "1080", height = "1080", frameRate = "60", backgroundColor = "#FFFFFF")]
@@ -19,14 +19,10 @@ package {
 		
 		private function init(e:Event = null):void {
 			super.removeEventListener(Event.ADDED_TO_STAGE, this.init);
-			//new MikaTest();
-			this.runProjectileMotionExperiment();
+			//super.addChild( new TankExperiment() );
+			super.addChild( new CoarseCollisionExperiment(super.stage) );
+			
 			
 		}
-		
-		private function runProjectileMotionExperiment():void {
-			super.addChild(new CoarseCollisionExperiment(super.stage));
-		}
 	}
-	
 }
