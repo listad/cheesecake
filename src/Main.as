@@ -1,6 +1,7 @@
-package {
+﻿package {
 	
 	
+	import engine.GameObject;
 	import engine.geometry.Vector2D;
 	import flash.display.Sprite;
 	import flash.events.Event;
@@ -20,7 +21,9 @@ package {
 		private function init(e:Event = null):void {
 			super.removeEventListener(Event.ADDED_TO_STAGE, this.init);
 			//super.addChild( new TankExperiment() );
+			
 			super.addChild( new CoarseCollisionExperiment(super.stage) );
+			
 			
 			
 		}

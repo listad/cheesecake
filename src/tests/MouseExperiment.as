@@ -42,7 +42,7 @@
 			
 			_mouseDownPosition.setVector(super.mouseX, super.mouseY);
 			_mouseDownPosition.subtract(_rigidBody.position);
-			_mouseDownPosition = matrix.transponseVector2D(_mouseDownPosition);
+			_mouseDownPosition = matrix.toLocal(_mouseDownPosition);
 			
 			
 			

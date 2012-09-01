@@ -8,7 +8,7 @@
 	import engine.geometry.Vector2D;
 	import flash.text.TextField;
 	
-	public class PhysicsSandbox extends Sprite {
+	public class PhysicsSolver extends Sprite {
 		// Const
 		
 		// Var
@@ -27,7 +27,7 @@
 		private var _textField:TextField = new TextField();
 		// Constructor
 		
-		public function PhysicsSandbox() {
+		public function PhysicsSolver() {
 			super.addChild(_textField);
 			//_textField.text = "test";
 			

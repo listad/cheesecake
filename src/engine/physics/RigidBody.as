@@ -1,4 +1,6 @@
 ﻿package engine.physics {
+	import engine.Component;
+	import engine.GameObject;
 	import engine.geometry.Matrix2D;
 	import engine.geometry.Polygon;
 	import engine.geometry.Rectangle2D;
@@ -10,7 +12,7 @@
 	
 	import engine.geometry.Vector2D;
 	
-	public class RigidBody extends Sprite {
+	public class RigidBody extends Component {
 		
 		public static const STATE_LENGTH:int			= 6;
 		
@@ -66,7 +68,9 @@
 		
 		// Constructor
 		
-		public function RigidBody(x:Number, y:Number, angle:Number, mass:Number = 1.0, inertiaTensor:Number = 100000.0, elasticity:Number = 0.25, friction:Number = 0.0, collisionGeometry:CollisionGeometry = null, debug:Boolean = false) {
+		public function RigidBody(gameObject:GameObject, x:Number = 0, y:Number = 0, angle:Number = 0, mass:Number = 1.0, inertiaTensor:Number = 100000.0, elasticity:Number = 0.25, friction:Number = 0.0, collisionGeometry:CollisionGeometry = null, debug:Boolean = false) {
+			super(gameObject);
+			return;
 			this.xPosition = x;
 			this.yPosition = y;
 			this.angle = angle;
@@ -90,11 +94,11 @@
 			
 			this._quadcell = this._quadtrees.push(this);
 			
-			if (this._debug && this._collisionGeometry) this._collisionGeometry.draw(super.graphics, 1.0, 0x660000, 0.5, 0x330000, 0.1);
-			this.position.draw(super.graphics);
+			//if (this._debug && this._collisionGeometry) this._collisionGeometry.draw(super.graphics, 1.0, 0x660000, 0.5, 0x330000, 0.1);
+			//this.position.draw(super.graphics);
 			
 			//test:
-			super.cacheAsBitmap = true;
+			//super.cacheAsBitmap = true;
 			
 		}
 		
@@ -148,15 +152,15 @@
 		//TODO: removeForce
 		
 		public function toLocal(vin:Vector2D, vout:Vector2D = null):Vector2D {
-			return this._matrix.transponseVector2D(vin, vout, this.xPosition, this.yPosition);
+			return this._matrix.toLocal(vin, vout, this.xPosition, this.yPosition);
 		}
 		
 		public function toGlobal(vin:Vector2D, vout:Vector2D = null):Vector2D {
-			return this._matrix.transformVector2D(vin, vout, this.xPosition, this.yPosition);
+			return this._matrix.toGlobal(vin, vout, this.xPosition, this.yPosition);
 		}
 		
 		public function vectorToGlobal(vin:Vector2D, vout:Vector2D = null):Vector2D {
-			return this._matrix.transformVector2D(vin, vout);
+			return this._matrix.toGlobal(vin, vout);
 		}
 		
 		
@@ -325,9 +329,9 @@
 		// DEBUG
 		
 		public function debug(graphics:Graphics):void {
-			super.x = xPosition;
-			super.y = yPosition;
-			super.rotation = this.angle * 180.0 / Math.PI;
+			//super.x = xPosition;
+			//super.y = yPosition;
+			//super.rotation = this.angle * 180.0 / Math.PI;
 			
 			
 			//this._quadcell.draw(graphics, 1.0, 0x003300, 0.25, 0x000000, 0.0);//
