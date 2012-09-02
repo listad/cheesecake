@@ -2,15 +2,27 @@
 	import flash.display.Graphics;
 	import flash.geom.Point;
 	public class Vector2D {
+		
+		public static function get forward():Vector2D {
+			return new Vector2D(1.0, 0.0);
+		}
+		
+		public static function get right():Vector2D {
+			return new Vector2D(0.0, 0.1);
+		}
+		
 		public static function add(a:Vector2D, b:Vector2D):Vector2D {
 			return new Vector2D(a.x + b.x, a.y + b.y);
 		}
+		
 		public static function subtract(a:Vector2D, b:Vector2D):Vector2D {
 			return new Vector2D(a.x - b.x, a.y - b.y);
 		}
+		
 		public static function negate(vector:Vector2D):Vector2D {
 			return new Vector2D( -vector.x, -vector.y);
 		}
+		
 		public static function scale(vector:Vector2D, value:Number):Vector2D {
 			return new Vector2D(vector.x * value, vector.y * value);
 		}

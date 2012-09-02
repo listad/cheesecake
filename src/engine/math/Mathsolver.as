@@ -39,5 +39,7 @@ package engine.math {
 			while(i < min) i += max;
 			return i;
 		}
+		
+		//map
 	}
 }
