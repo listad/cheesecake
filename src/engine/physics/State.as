@@ -25,7 +25,9 @@ package engine.physics {
 		public function set vector(value:Vector.<Number>):void {
 			this._vector = value;
 			
-			if(super.collider) super.collider.invalidate();
+			this._matrix.angle = this._vector[ANGLE_INDEX];
+			
+		
 			
 			super.gameObject.x = x;//DEBUG;
 			super.gameObject.y = y;//DEBUG;

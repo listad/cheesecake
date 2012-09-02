@@ -1,5 +1,5 @@
 ﻿package engine.geometry {
-	import engine.physics.RigidBody;
+	import engine.physics.Collider;
 	import flash.display.Graphics;
 	
 	public class Projection {
@@ -10,15 +10,15 @@
 		private var _minVertices:Vector.<Vector2D> = new Vector.<Vector2D>;
 		private var _maxVertices:Vector.<Vector2D> = new Vector.<Vector2D>;
 		
-		public function Projection(axis:Vector2D, body:RigidBody) {
-			this.project(axis, body);
+		public function Projection(axis:Vector2D, collider:Collider) {
+			this.project(axis, collider);
 		}
 		
-		public function project(axis:Vector2D, body:RigidBody):void {
+		public function project(axis:Vector2D, collider:Collider):void {
 			this._min = Number.POSITIVE_INFINITY;
 			this._max = Number.NEGATIVE_INFINITY;
 			
-			var vertices:Vector.<Vector2D> = body.collisionGeometry.globalVertices;//vertices;
+			var vertices:Vector.<Vector2D> = collider.globalVertices;//vertices;
 			var length:int = vertices.length;
 			for (var i:int = 0; i < length; i++) {
 				var vertex:Vector2D = vertices[i];// body.toGlobal(vertices[i]);

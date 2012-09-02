@@ -1,6 +1,8 @@
 package engine.physics {
 	public class PhysicsMaterial {
 		
+		public static const DEFAULT_MATERIAL:PhysicsMaterial = new PhysicsMaterial();
+		
 		private var _friction:Number;
 		private var _elasticity:Number;
 		

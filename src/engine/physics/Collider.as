@@ -8,11 +8,13 @@ package engine.physics {
 		private var _state:State;
 		
 		private var _isTrigger:Boolean = false;
-		private var _type:int;
+		private var _type:int = 0;
 		private var _vertices:Vector.<Vector2D>;
 		private var _globalVertices:Vector.<Vector2D>;
 		private var _globalEdges:Vector.<Vector2D>;
 		
+		private var _isValid:Boolean = false;
+		private var _boundsActual:Boolean = false;
 		private var _globalVerticesActual:Boolean = false;
 		private var _globalEdgesActual:Boolean = false;
 		
@@ -26,6 +28,17 @@ package engine.physics {
 		
 		public function Collider() {
 			super();
+		}
+		
+		public function invalidate():void {
+			this._isValid = false;
+			this._boundsActual = false;
+			this._globalVerticesActual = false;
+			this._globalEdgesActual = false;
+		}
+		
+		public function validate():void {
+			this._isValid = true;
 		}
 		
 		public function set polygon(polygon:Polygon):void {
@@ -50,10 +63,10 @@ package engine.physics {
 		
 		public function updateBounds():void {
 			switch(this._type) {
-				case ColliderType.POLYGON:
+				case CollisionMatrix.POLYGON:
 					this._bounds.circumAroundPolygon(this.globalVertices);
 					break;
-				case ColliderType.CIRCLE:
+				case CollisionMatrix.CIRCLE:
 					this._bounds.circumAroundCircle(this._state.x, this._state.y, this._radius);
 					break;
 				default:
@@ -70,6 +83,10 @@ package engine.physics {
 		}
 		
 		public function get bounds():Bounds2D {
+			if (this._boundsActual == false) {
+				this.updateBounds();
+				this._boundsActual = true;
+			}
 			return this._bounds;
 		}
 		
@@ -108,16 +125,16 @@ package engine.physics {
 			}
 		}
 		
-		public function outdate():void {
-			this._globalVerticesActual = false;
-			this._globalEdgesActual = false;
-		}
+		//public function outdate():void {
+		//	this._globalVerticesActual = false;
+		//	this._globalEdgesActual = false;
+		//}
 		
 		public function get quadcell():Cell { return this._quadcell; }
 		public function set quadcell(value:Cell):void { this._quadcell = value; }
 		public function get quadtreeVisible():Boolean { return this._quadtreeVisible; }
 		public function set quadtreeVisible(value:Boolean):void { this._quadtreeVisible = value; }
-		
+		public function get type():int { return this._type; }
 		
 		
 		
