@@ -2,12 +2,14 @@
 	import flash.display.Graphics;
 	public class Polygon {
 		// static
-		public static function rect(width:Number, height:Number):Vector.<Vector2D> {
-			return new <Vector2D>[
+		public static function rect(width:Number, height:Number):Polygon {
+			return new Polygon(
+				new <Vector2D>[
 					new Vector2D( -0.5 * width, -0.5 * height),
 					new Vector2D(  0.5 * width, -0.5 * height),
 					new Vector2D(  0.5 * width,  0.5 * height),
 					new Vector2D( -0.5 * width,  0.5 * height)	]
+					);
 		}
 		
 		public static function convexRegular(sides:int, radius:int):Vector.<Vector2D> {

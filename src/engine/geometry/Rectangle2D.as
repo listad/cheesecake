@@ -39,5 +39,9 @@
 			graphics.drawRect(this._minX, this._minY, this._maxX - this._minX, this._maxY - this._minY);
 			graphics.endFill();
 		}
+		
+		public function toString():String {
+			return "[object Rectangle2D (minX: " + _minX + ", minY: " + _minY + ", maxX: " + _maxX + ", maxY: " + _maxX + ")]";
+		}
 	}
 }

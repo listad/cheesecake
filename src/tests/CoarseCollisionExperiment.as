@@ -1,23 +1,29 @@
 ﻿package tests {
-	import engine.physics.PhysicsSandbox;
+	import engine.GameEngine;
+	import engine.GameObject;
+	import engine.geometry.Polygon;
+	import engine.geometry.Vector2D;
+	
 	import flash.display.Sprite;
-	import flash.display.Stage;
 	
 	public class CoarseCollisionExperiment extends Sprite {
-		private var sandbox:PhysicsSandbox;
 		
-		private var _bodies:Vector.<RigidBody> = new Vector.<RigidBody>();
-		
-		public function CoarseCollisionExperiment(stage:Stage) {
-			stage.frameRate = 60;
+		public function CoarseCollisionExperiment() {
+			//stage.frameRate = 60;
 			
-			this._sandbox = new PhysicsSandbox();
+			var gameEngine:GameEngine = new GameEngine();
+			super.addChild(gameEngine);
+			
+			var gameObject:GameObject = new GameObject();
+			gameEngine.addGameObject(gameObject);
 			
 			
+			gameObject.state.x = 100;
+			gameObject.state.y = 100;
+			gameObject.state.rotation = 0;
 			
-			
-			
-			this._sandbox.run();
+			gameObject.collider.polygon = Polygon.rect(50.0, 50.0);
+			gameObject.rigidBody.addImpulse(new Vector2D(10.0, 0));
 		}
 		
 	}

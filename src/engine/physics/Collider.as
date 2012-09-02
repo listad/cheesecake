@@ -20,21 +20,32 @@ package engine.physics {
 		private var _radius:Number;
 		private var _bounds:Bounds2D = new Bounds2D();
 		
+		//quadtrees
+		private var _quadcell:Cell;
+		private var _quadtreeVisible:Boolean = false;
+		
 		public function Collider() {
-			
+			super();
 		}
 		
 		public function set polygon(polygon:Polygon):void {
 			this._vertices = polygon.vertices;
-			var length:int = this._vertices;
+			var length:int = this._vertices.length;
 			this._globalVertices = new Vector.<Vector2D>(length);
 			this._globalEdges = new Vector.<Vector2D>(length);
 			this._type = ColliderType.POLYGON;
+			
+			this.updateBounds();
+			
+			//debug:
+			polygon.draw(super.gameObject.graphics);
 		}
 		
 		public function set circle(radius:Number):void {
 			this._radius = radius;
 			this._type = ColliderType.CIRCLE;
+			
+			this.updateBounds();
 		}
 		
 		public function updateBounds():void {
@@ -73,8 +84,8 @@ package engine.physics {
 				var vertices:Vector.<Vector2D> = this._vertices;
 				var length:int = vertices.length;
 				for (var i:int = 0; i < length; i++)
-					this._globalVertices[i] = this.state.toGlobal(vertices[i], this._globalVertices[i]);
-					
+					this._globalVertices[i] = this.gameObject.state.toGlobal(vertices[i], this._globalVertices[i]);
+				
 				return this._globalVertices;
 			}
 		}
@@ -102,6 +113,10 @@ package engine.physics {
 			this._globalEdgesActual = false;
 		}
 		
+		public function get quadcell():Cell { return this._quadcell; }
+		public function set quadcell(value:Cell):void { this._quadcell = value; }
+		public function get quadtreeVisible():Boolean { return this._quadtreeVisible; }
+		public function set quadtreeVisible(value:Boolean):void { this._quadtreeVisible = value; }
 		
 		
 		

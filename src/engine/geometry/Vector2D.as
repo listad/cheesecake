@@ -8,7 +8,7 @@
 		}
 		
 		public static function get right():Vector2D {
-			return new Vector2D(0.0, 0.1);
+			return new Vector2D(0.0, 1.0);
 		}
 		
 		public static function add(a:Vector2D, b:Vector2D):Vector2D {
@@ -120,6 +120,12 @@
 			graphics.beginFill(fillColor, fillAlpha);
 			graphics.drawCircle(this._x, this._y, radius);
 			graphics.endFill();
+		}
+		
+		public function drawVector(graphics:Graphics, tx:Number, ty:Number, lineThickness:Number = 0.5, lineColor:uint = 0x440000, lineAlpha:Number = 0.5):void {
+			graphics.lineStyle(lineThickness, lineColor, lineAlpha);
+			graphics.moveTo(tx, ty);
+			graphics.lineTo(tx + x, ty + y); 
 		}
 		
 		public function toString():String {

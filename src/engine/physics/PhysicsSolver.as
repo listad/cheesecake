@@ -136,7 +136,7 @@
 					for (var q:int = 0; q < cells.length; q++) {
 						var cell:Cell = cells[q];
 						//cell.draw(super.graphics);
-						var bodies:Vector.<RigidBody> = cell.rigidBodies;
+						var bodies:Vector.<RigidBody> = cell.colliders;
 						var length:int = bodies.length;
 						for (var p:int = 0; p < length; p++) {
 							if(bodies[p].quadtreeVisible) this.checkCollision(rigidBody, bodies[p]);

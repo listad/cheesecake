@@ -1,13 +1,9 @@
 ﻿package {
 	
 	
-	import engine.GameObject;
-	import engine.geometry.Vector2D;
 	import flash.display.Sprite;
 	import flash.events.Event;	
 	import tests.CoarseCollisionExperiment;
-	import tests.TankExperiment;
-	import tests.ProjectileMotionExperiment;
 	
 	[SWF(width = "1080", height = "1080", frameRate = "60", backgroundColor = "#FFFFFF")]
 	
@@ -20,12 +16,8 @@
 		
 		private function init(e:Event = null):void {
 			super.removeEventListener(Event.ADDED_TO_STAGE, this.init);
-			//super.addChild( new TankExperiment() );
 			
-			super.addChild( new CoarseCollisionExperiment(super.stage) );
-			
-			
-			
+			super.addChild( new CoarseCollisionExperiment() );
 		}
 	}
 }

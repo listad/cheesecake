@@ -1,28 +1,36 @@
 package engine.physics {
 	import engine.Component;
 	import engine.GameObject;
+	import engine.geometry.Matrix2D;
 	import engine.geometry.Vector2D;
+	import engine.math.Mathsolver;
 	public class State extends Component {
 		
 		public static const X_COORDINATE_INDEX:int = 0;
 		public static const Y_COORDINATE_INDEX:int = 1;
-		public static const ANGLE_INDEX:int = 2;
+		public static const ANGLE_INDEX:int = 4;
 		
 		private var _length:int;
-		private var _state:Vector.<Number> = new Vector.<Number>();
+		private var _vector:Vector.<Number> = new Vector.<Number>(6);
 		private var _matrix:Matrix2D = new Matrix2D();
 			
-		public function State(gameObject:GameObject) {
-			super(gameObject);
+		public function State() {
+			super();
 		}
 		
-		public function get state():Vector.<Number> {
-			return this._state;
+		public function get vector():Vector.<Number> {
+			return this._vector;
 		}
 		
-	//	public function set state(value:Vector.<Number>):void {
-	//		this._state = value;
-	//	}
+		public function set vector(value:Vector.<Number>):void {
+			this._vector = value;
+			
+			if(super.collider) super.collider.invalidate();
+			
+			super.gameObject.x = x;//DEBUG;
+			super.gameObject.y = y;//DEBUG;
+			super.gameObject.rotation = rotation * Mathsolver.RAD_TO_DEG;//DEBUG;
+		}
 		
 	//	public function get length():int {
 	//		return this._length;
@@ -33,28 +41,40 @@ package engine.physics {
 	//	}
 		
 		public function get x():Number {
-			return this._state[X_COORDINATE_INDEX];
+			return this._vector[X_COORDINATE_INDEX];
 		}
 		
 		public function set x(value:Number):void {
-			this._state[X_COORDINATE_INDEX] = value;
+			this._vector[X_COORDINATE_INDEX] = value;
+			
+			if (super.collider) super.collider.invalidate();
+			
+			super.gameObject.x = value;//DEBUG;
 		}
 		
 		public function get y():Number {
-			return this._state[Y_COORDINATE_INDEX];
+			return this._vector[Y_COORDINATE_INDEX];
 		}
 		
 		public function set y(value:Number):void {
-			this._state[Y_COORDINATE_INDEX] = value;
+			this._vector[Y_COORDINATE_INDEX] = value;
+			
+			if (super.collider) super.collider.invalidate();
+			
+			super.gameObject.y = value;//DEBUG;
 		}
 		
 		public function get rotation():Number {
-			return this._state[ANGLE_INDEX];
+			return this._vector[ANGLE_INDEX];
 		}
 		
 		public function set rotation(value:Number):void {
-			this._state[ANGLE_INDEX] = value;
-			this._matrix.angle = this.angle;
+			this._vector[ANGLE_INDEX] = value;
+			this._matrix.angle = value;
+			
+			if (super.collider) super.collider.invalidate();
+			
+			super.gameObject.rotation = value * Mathsolver.RAD_TO_DEG;//DEBUG;
 		}
 		
 		public function get position():Vector2D {

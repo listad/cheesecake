@@ -4,10 +4,10 @@
 	import flash.display.Graphics;
 	
 	public class Cell extends Rectangle2D {
-		private var _rigidBodyNum:int = 0;
+		private var _collidersNum:int = 0;
 		
 		private var _successors:Vector.<Cell> = new Vector.<Cell>();
-		private var _rigidBodies:Vector.<RigidBody> = new Vector.<RigidBody>();
+		private var _colliders:Vector.<Collider> = new Vector.<Collider>();
 		private var _root:Cell;
 		private var _parent:Cell;
 		
@@ -24,7 +24,7 @@
 			super._maxY = super._minY + height;
 			this._parent = parent;
 			
-			//if (graphics) super.draw(graphics, 1.0, 0x00FF00, 0.05, 0x000000, 0.0);
+			if (graphics) super.draw(graphics, 1.0, 0x00FF00, 0.05, 0x000000, 0.0);
 			
 			if (depth > 0) {
 				var halfWidth:Number = 0.5 * width;
@@ -36,43 +36,43 @@
 			}
 		}
 		
-		public function push(body:RigidBody):Cell {
-			this._rigidBodyNum++;
+		public function push(collider:Collider):Cell {
+			this._collidersNum++;
 			var parent:Cell = this._parent;
 			while (parent != null) {
-				parent.rigidBodyNum++;
+				parent.collidersNum++;
 				parent = parent.parent;
 			}
 				
 			var successorsNum:int = this._successors.length;
 			for (var i:int = 0; i < successorsNum; i++) {
 				var successor:Cell = this._successors[i];
-				if (successor.isContains(body)) return successor.push(body);
+				if (successor.isContains(collider)) return successor.push(collider);
 			}
 			
-			this._rigidBodies.push(body);//FIXME
+			this._colliders.push(collider);//FIXME
 			return this;
 		}
 		
-		public function splice(body:RigidBody):void {
+		public function splice(collider:Collider):void {
 			
 			
-			var index:int = this._rigidBodies.indexOf(body);//FIXME
+			var index:int = this._colliders.indexOf(collider);//FIXME
 			if (index != -1) {
-				this._rigidBodyNum--;
-				this._rigidBodies.splice(index, 1);//FIXME
+				this._collidersNum--;
+				this._colliders.splice(index, 1);//FIXME
 				
 				
-				var parent:Cell = body.quadcell.parent;
+				var parent:Cell = collider.quadcell.parent;
 				while (parent != null) {
-					parent.rigidBodyNum--;
+					parent.collidersNum--;
 					parent = parent.parent;
 				}
 			}
 		}
 		
-		public function isContains(body:RigidBody):Boolean {
-			var bounds:Rectangle2D = body.bounds;
+		public function isContains(collider:Collider):Boolean {
+			var bounds:Rectangle2D = collider.bounds;
 			if (bounds.maxX > super._maxX) return false;
 			if (bounds.minX < super._minX) return false;
 			if (bounds.maxY > super._maxY) return false;
@@ -80,43 +80,60 @@
 			return true;
 		}
 		
-		public function repush(body:RigidBody):Cell {
-			if (this.isContains(body) == false) {
-				this.splice(body);
-				return this._root.push(body);
+		public function repush(collider:Collider):Cell {
+			if (this.isContains(collider) == false) {
+				this.splice(collider);
+				return this._root.push(collider);
 			}
 			
 			var successorsNum:int = this._successors.length;
 			for (var i:int = 0; i < successorsNum; i++) {
 				var successor:Cell = this._successors[i];
-				if (successor.isContains(body)) {
-					this.splice(body);
-					return successor.push(body);
+				if (successor.isContains(collider)) {
+					this.splice(collider);
+					return successor.push(collider);
 				}
 			}
 			
 			return this;
 		}
 		
-		public function getCellsUnderBody(body:RigidBody, cells:Vector.<Cell>):void {
+	//	public function getCellsUnderBody(body:RigidBody, cells:Vector.<Cell>):void {
+	//		var successorsNum:int = this._successors.length;
+	//		for (var i:int = 0; i < successorsNum; i++) {
+	//			var successor:Cell = this._successors[i];
+	//			if (successor.collide(body.bounds)) {
+	//				var incount:int = successor._colliders.length;
+	//				if (incount > 0)//
+	//					cells.push(successor);
+	//					
+	//				if(successor._collidersNum - incount > 0) successor.getCellsUnderBody(body, cells);
+	//			}
+	//		}
+	//	}
+		public function getColliders(collider:Collider, colliders:Vector.<Collider>):void {
 			var successorsNum:int = this._successors.length;
 			for (var i:int = 0; i < successorsNum; i++) {
 				var successor:Cell = this._successors[i];
-				if (successor.collide(body.bounds)) {
-					var incount:int = successor._rigidBodies.length;
-					if (incount > 0)//
-						cells.push(successor);
+				if (successor.collide(collider.bounds)) {
+					
+					var candidates:Vector.<Collider> = successor.colliders;
+					var candidatesNum:int = candidates.length;
+					for (var j:int = 0; j < candidatesNum; j++) {
+						var candidate:Collider = candidates[j];
+						colliders.push(candidate);
+					}
 						
-					if(successor._rigidBodyNum - incount > 0) successor.getCellsUnderBody(body, cells);
+					if(successor._collidersNum - candidatesNum > 0) successor.getColliders(collider, colliders);
 				}
 			}
 		}
 		
 		public function get parent():Cell { return this._parent; }
-		public function get rigidBodies():Vector.<RigidBody> { return this._rigidBodies; }
+		public function get colliders():Vector.<Collider> { return this._colliders; }
 		
-		public function get rigidBodyNum():int { return this._rigidBodyNum; }
-		public function set rigidBodyNum(value:int):void { this._rigidBodyNum = value; }
+		public function get collidersNum():int { return this._collidersNum; }
+		public function set collidersNum(value:int):void { this._collidersNum = value; }
 		
 	}
 }
