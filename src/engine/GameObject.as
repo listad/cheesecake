@@ -1,4 +1,4 @@
-package engine {
+﻿package engine {
 	import flash.display.Sprite;
 	import engine.physics.Collider;
 	import engine.physics.RigidBody;
@@ -26,22 +26,25 @@ package engine {
 			this.state.rotation = rotation;
 			
 			this._tag = tag;
+			
+			//debug:
+			//super.cacheAsBitmap = true;
 		}
 		
-		public function get state():State { return this._state; }
+		public final function get state():State { return this._state; }
 		
-		public function get rigidBody():RigidBody { return this._rigidBody; }
+		public final function get rigidBody():RigidBody { return this._rigidBody; }
 		
-		public function set rigidBody(value:RigidBody):void {
+		public final function set rigidBody(value:RigidBody):void {
 			this._rigidBody = value;
 			this._rigidBody.gameObject = this;
 		}
 		
 		//public function get renderer():State { return this._renderer; }
 		
-		public function get collider():Collider { return this._collider; }
+		public final function get collider():Collider { return this._collider; }
 		
-		public function set collider(value:Collider):void {
+		public final function set collider(value:Collider):void {
 			this._collider = value;
 			this._collider.gameObject = this;
 		}
@@ -54,6 +57,20 @@ package engine {
 		
 		//public function get state():State { return this._state; }
 		
-		public function get tag():String { return this._tag; }
+		public final function get tag():String { return this._tag; }
+		
+		
+		//
+		
+		
+		public function onTriggerEnter(collision:Collision):void {
+			
+		}
+		public function onTriggerExit(collision:Collision):void {
+			
+		}
+		public function onCollision(collision:Collision):void {
+			
+		}
 	}
 }

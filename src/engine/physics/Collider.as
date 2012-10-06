@@ -1,11 +1,10 @@
-package engine.physics {
+﻿package engine.physics {
 	import engine.Component;
 	import engine.GameObject;
 	import engine.geometry.Polygon;
 	import engine.geometry.Vector2D;
 	public class Collider extends Component {
-		
-		private var _state:State;
+		private var _material:PhysicsMaterial = PhysicsMaterial.DEFAULT_MATERIAL;
 		
 		private var _isTrigger:Boolean = false;
 		private var _type:int = 0;
@@ -26,6 +25,10 @@ package engine.physics {
 		private var _quadcell:Cell;
 		private var _quadtreeVisible:Boolean = false;
 		
+		
+		//debug:
+		private var _polygon:Polygon;
+		
 		public function Collider() {
 			super();
 		}
@@ -42,6 +45,8 @@ package engine.physics {
 		}
 		
 		public function set polygon(polygon:Polygon):void {
+			this._polygon = polygon;//debug
+		
 			this._vertices = polygon.vertices;
 			var length:int = this._vertices.length;
 			this._globalVertices = new Vector.<Vector2D>(length);
@@ -51,7 +56,9 @@ package engine.physics {
 			this.updateBounds();
 			
 			//debug:
-			polygon.draw(super.gameObject.graphics);
+			//var color:uint = super.gameObject.rigidBody ? 0xFFAAAA : 0xAAAAAA;
+			
+			//polygon.draw(super.gameObject.graphics, 1, 0, 1, color, 0.01);
 		}
 		
 		public function set circle(radius:Number):void {
@@ -59,6 +66,17 @@ package engine.physics {
 			this._type = ColliderType.CIRCLE;
 			
 			this.updateBounds();
+			
+			if(super.rigidBody) super.rigidBody.inertiaTensor = radius * radius * super.rigidBody.mass;
+			//debug:
+			//var color:uint = super.gameObject.rigidBody ? 0xFFAAAA : 0xAAAAAA;
+			//
+			//super.gameObject.graphics.lineStyle(1, 0, 1);
+			//
+			//super.gameObject.graphics.beginFill(color, 0.01);
+			//super.gameObject.graphics.drawCircle(0, 0, radius);
+			//super.gameObject.graphics.endFill();
+			//super.gameObject.graphics.lineTo(0, 0);
 		}
 		
 		public function updateBounds():void {
@@ -67,7 +85,7 @@ package engine.physics {
 					this._bounds.circumAroundPolygon(this.globalVertices);
 					break;
 				case CollisionMatrix.CIRCLE:
-					this._bounds.circumAroundCircle(this._state.x, this._state.y, this._radius);
+					this._bounds.circumAroundCircle(super.state.x, super.state.y, this._radius);
 					break;
 				default:
 					break;
@@ -136,8 +154,11 @@ package engine.physics {
 		public function set quadtreeVisible(value:Boolean):void { this._quadtreeVisible = value; }
 		public function get type():int { return this._type; }
 		
+		public function get material():PhysicsMaterial { return this._material; }
+		public function set material(value:PhysicsMaterial):void { this._material = value; }
 		
-		
+		public function get polygon():Polygon { return this._polygon; }
+		public function get radius():Number { return this._radius; }
 		
 		
 	}

@@ -12,7 +12,7 @@
 					);
 		}
 		
-		public static function convexRegular(sides:int, radius:int):Vector.<Vector2D> {
+		public static function convexRegular(sides:int, radius:int):Polygon {
 			var corner:Number = 2.0 * Math.PI / sides;
 			var verticesCoords:Vector.<Vector2D> = new Vector.<Vector2D>();
 			
@@ -22,7 +22,16 @@
 				verticesCoords[i] = new Vector2D(x, y);
 			}
 			
-			return verticesCoords;
+			return new Polygon(verticesCoords);
+		}
+		
+		public static function fromVertices(vertices:Vector.<Number>):Polygon {
+			var verticesPoints:Vector.<Vector2D> = new Vector.<Vector2D>();
+			var length:int = vertices.length / 2;
+			for (var i:int = 0; i < length; i++) {
+				verticesPoints[i] = new Vector2D(vertices[int(2 * i)], vertices[int(2 * i) | 1]);
+			}
+			return new Polygon(verticesPoints);
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

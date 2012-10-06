@@ -11,6 +11,8 @@ package tests.game {
 		private var _down:Boolean = false;
 		private var _right:Boolean = false;
 		private var _left:Boolean = false;
+		private var _autoShot:Boolean = false;
+		private var _autoMachinegun:Boolean = false;
 		
 		public function PlayerController(stage:Stage, tank:Tank) {
 			this._tank = tank;
@@ -34,6 +36,12 @@ package tests.game {
 				case Keyboard.LEFT:
 					this._left = true;
 					break;
+				case Keyboard.SPACE:
+					this._autoShot = true;
+					break;
+				case Keyboard.CONTROL:
+					this._autoMachinegun = true;
+					break;
 		}}
 		
 		private function onKeyUp(event:KeyboardEvent):void {
@@ -50,6 +58,12 @@ package tests.game {
 				case Keyboard.LEFT:
 					this._left = false;
 					break;
+				case Keyboard.SPACE:
+					this._autoShot = false;
+					break;
+				case Keyboard.CONTROL:
+					this._autoMachinegun = false;
+					break;
 			}
 		}
 		
@@ -60,6 +74,8 @@ package tests.game {
 				if (this._right) this._tank.engine.steering = 1.0;
 				if (this._left) this._tank.engine.steering = -1.0;
 				if (!this._left && !this._right) this._tank.engine.steering = 0.0;
+				if (this._autoShot) this._tank.shot();
+				if (this._autoMachinegun) this._tank.machinegunShot();
 		}
 	}
 }

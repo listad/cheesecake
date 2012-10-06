@@ -37,6 +37,13 @@
 			this._y = y;
 		}
 		
+		public function negate():Vector2D {
+			this._x = -this._x;
+			this._y = -this._y;
+			return this;
+		}
+		
+		
 		public function add(vector:Vector2D):Vector2D {
 			this._x += vector.x;
 			this._y += vector.y;

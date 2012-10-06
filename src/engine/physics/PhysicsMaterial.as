@@ -1,4 +1,4 @@
-package engine.physics {
+﻿package engine.physics {
 	public class PhysicsMaterial {
 		
 		public static const DEFAULT_MATERIAL:PhysicsMaterial = new PhysicsMaterial();
@@ -6,7 +6,7 @@ package engine.physics {
 		private var _friction:Number;
 		private var _elasticity:Number;
 		
-		public function PhysicsMaterial(friction:Number = 0.25, elasticity:Number = 0.25) {
+		public function PhysicsMaterial(friction:Number = 0.0, elasticity:Number = 0.0) {
 			this._friction = friction;
 			this._elasticity = elasticity;
 		}

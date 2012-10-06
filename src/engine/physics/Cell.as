@@ -6,34 +6,58 @@
 	public class Cell extends Rectangle2D {
 		private var _collidersNum:int = 0;
 		
-		private var _successors:Vector.<Cell> = new Vector.<Cell>();
+		private var _successors:Vector.<Cell>;
 		private var _colliders:Vector.<Collider> = new Vector.<Collider>();
 		private var _root:Cell;
 		private var _parent:Cell;
 		
-		public function Cell(depth:int, x:Number, y:Number, width:Number, height:Number, root:Cell, parent:Cell, graphics:Graphics = null) {
+		//new
+		private var _depth:int;
+		private var _grid_x:int;
+		private var _grid_y:int;
+		
+		
+		public function Cell(depth:int, grid_x:int, grid_y:int, x:Number, y:Number, width:Number, height:Number, root:Cell, parent:Cell, graphics:Graphics = null) {
+			//depth, grid_x, grid_y, x, y, width, height, root, parent, graphics
+			this._depth = depth;
+			this._grid_x = grid_x;
+			this._grid_y = grid_y;
+			
 			if (root == null) {
 				this._root = this;
 			} else {
 				this._root = root;
 			}
 			
-			super._minX = x;
-			super._minY = y;
-			super._maxX = super._minX + width;
-			super._maxY = super._minY + height;
+			super._min_x = x;
+			super._min_y = y;
+			super._max_x = super._min_x + width;
+			super._max_y = super._min_y + height;
 			this._parent = parent;
 			
-			if (graphics) super.draw(graphics, 1.0, 0x00FF00, 0.05, 0x000000, 0.0);
+			//if (graphics) super.draw(graphics, 1.0, 0x00FF00, 0.05, 0x000000, 0.0);
 			
-			if (depth > 0) {
-				var halfWidth:Number = 0.5 * width;
-				var halfHeight:Number = 0.5 * height;
-				this._successors[0] = new Cell(depth - 1, x, y, halfWidth, halfHeight, this._root, this, graphics);								//UP-LEFT
-				this._successors[1] = new Cell(depth - 1, x + halfWidth, y, halfWidth, halfHeight, this._root, this, graphics);					//UP-RIGHT
-				this._successors[2] = new Cell(depth - 1, x + halfWidth, y + halfHeight, halfWidth, halfHeight, this._root, this, graphics);	//DOWN-RIGHT
-				this._successors[3] = new Cell(depth - 1, x, y + halfHeight, halfWidth, halfHeight, this._root, this, graphics);				//DOWN-LEFT
-			}
+			//if (depth > 0) {
+				//var halfWidth:Number = 0.5 * width;
+				//var halfHeight:Number = 0.5 * height;
+				//this._successors[0] = new Cell(depth - 1, x, y, halfWidth, halfHeight, this._root, this, graphics);								//UP-LEFT
+				//this._successors[1] = new Cell(depth - 1, x + halfWidth, y, halfWidth, halfHeight, this._root, this, graphics);					//UP-RIGHT
+				//this._successors[2] = new Cell(depth - 1, x + halfWidth, y + halfHeight, halfWidth, halfHeight, this._root, this, graphics);	//DOWN-RIGHT
+				//this._successors[3] = new Cell(depth - 1, x, y + halfHeight, halfWidth, halfHeight, this._root, this, graphics);				//DOWN-LEFT
+			//}
+		}
+		
+		public function set successors(value:Vector.<Cell>):void {
+			this._successors = value;
+		}
+		public function get depth():int {
+			return this._depth;
+		}
+		public function get grid_x():int {
+			return this._grid_x;
+		}
+		public function get grid_y():int {
+			return this._grid_y;
 		}
 		
 		public function push(collider:Collider):Cell {
@@ -44,7 +68,8 @@
 				parent = parent.parent;
 			}
 				
-			var successorsNum:int = this._successors.length;
+			var successorsNum:int = 0;
+			if(this._successors) successorsNum = this._successors.length;
 			for (var i:int = 0; i < successorsNum; i++) {
 				var successor:Cell = this._successors[i];
 				if (successor.isContains(collider)) return successor.push(collider);
@@ -73,10 +98,10 @@
 		
 		public function isContains(collider:Collider):Boolean {
 			var bounds:Rectangle2D = collider.bounds;
-			if (bounds.maxX > super._maxX) return false;
-			if (bounds.minX < super._minX) return false;
-			if (bounds.maxY > super._maxY) return false;
-			if (bounds.minY < super._minY) return false;
+			if (bounds.max_x > super._max_x) return false;
+			if (bounds.min_x < super._min_x) return false;
+			if (bounds.max_y > super._max_y) return false;
+			if (bounds.min_y < super._min_y) return false;
 			return true;
 		}
 		
@@ -86,7 +111,8 @@
 				return this._root.push(collider);
 			}
 			
-			var successorsNum:int = this._successors.length;
+			var successorsNum:int = 0;
+			if(this._successors) successorsNum = this._successors.length;
 			for (var i:int = 0; i < successorsNum; i++) {
 				var successor:Cell = this._successors[i];
 				if (successor.isContains(collider)) {
@@ -112,7 +138,9 @@
 	//		}
 	//	}
 		public function getColliders(collider:Collider, colliders:Vector.<Collider>):void {
-			var successorsNum:int = this._successors.length;
+			
+			var successorsNum:int = 0;
+			if(this._successors) successorsNum = this._successors.length;
 			for (var i:int = 0; i < successorsNum; i++) {
 				var successor:Cell = this._successors[i];
 				if (successor.collide(collider.bounds)) {

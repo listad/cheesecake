@@ -27,7 +27,7 @@ package tests.game {
 		
 		public function generate(rigidBody:RigidBody):void {
 			var force:Vector2D = new Vector2D(this._force * this._acceleration, 0.0);
-			rigidBody.applyForce( rigidBody.vectorToGlobal(force) );
+			rigidBody.applyForce( rigidBody.state.toGlobal(force, null, false) );
 			rigidBody.applyTorque(this._torque * this._steering);
 		}
 	}

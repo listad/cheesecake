@@ -1,8 +1,9 @@
-package engine 
+﻿package engine 
 {
 	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.filters.GlowFilter;
 	
 	public class GameEngine extends Sprite
 	{
@@ -16,20 +17,28 @@ package engine
 		
 		//DEBUG:
 		private var _gameObjects:Vector.<GameObject> = new Vector.<GameObject>();
-		private var _staticGraphics:Graphics;
+		public var _staticGraphics:Graphics;
 		private var _dynamicGraphics:Graphics;
+		public var _staticContainer:Sprite;
+		public var _dynamicContainer:Sprite;
 		
 		public function GameEngine() 
 		{
+			
+			
 			trace("gameEngine initializing...");
 			
 			//DEBUG GRAPHICS:
-			var temp:Sprite = new Sprite();
-			super.addChild(temp);
-			this._staticGraphics = temp.graphics;
-			temp = new Sprite();
-			super.addChild(temp);
-			this._dynamicGraphics = temp.graphics;
+			_staticContainer = new Sprite();
+			super.addChild(_staticContainer);
+			//_staticContainer.cacheAsBitmap = true;
+			this._staticGraphics = _staticContainer.graphics;
+			//_staticContainer.filters = [new GlowFilter(0x330000, 1.0, 3.0, 3.0, 3.0, 1, true, true)];
+			
+			_dynamicContainer = new Sprite();
+			super.addChild(_dynamicContainer);
+			this._dynamicGraphics = _dynamicContainer.graphics;
+			//_dynamicContainer.filters = [new GlowFilter(0xDD0000, 1.0, 3.0, 3.0, 2.0, 1, true, true)];
 			
 			
 			
@@ -39,7 +48,8 @@ package engine
 		}
 		
 		public function addGameObject(gameObject:GameObject):void {
-			super.addChild(gameObject);//debug
+			if (!gameObject.rigidBody) _staticContainer.addChild(gameObject);//debug
+			else _dynamicContainer.addChild(gameObject);//debug
 			
 			this._gameObjects.push(gameObject);//debug
 			
@@ -60,7 +70,7 @@ package engine
 			//1.	-> physics iterations
 			//			-> rigidbody.update() -> if(?) invalidate collider
 			//			-> resolveCollisions -> validate all invalidated colliders
-			this._physics.step(0.05);
+			this._physics.step(0.075);
 			
 			
 			
@@ -82,13 +92,15 @@ package engine
 			//<-
 			
 			//debug:
-			for (var i:int = 0; i < this._gameObjects.length; i++) {
-				var gameObject:GameObject = this._gameObjects[i];
-				gameObject.state.position.drawGlobal(this._dynamicGraphics, 5.0, 1.0, 0x440000, 0.5, 0x000000, 0.0);
-				gameObject.state.forward.scale(20).drawVector(this._dynamicGraphics, gameObject.state.x, gameObject.state.y, 1.0, 0x660000, 0.5);
-				gameObject.state.right.scale(20).drawVector(this._dynamicGraphics, gameObject.state.x, gameObject.state.y, 1.0, 0x000066, 0.5);
-			}
+			//for (var i:int = 0; i < this._gameObjects.length; i++) {
+				////var gameObject:GameObject = this._gameObjects[i];
+				//gameObject.state.position.drawGlobal(this._dynamicGraphics, 5.0, 1.0, 0x440000, 0.5, 0x000000, 0.0);
+				//gameObject.state.forward.scale(20).drawVector(this._dynamicGraphics, gameObject.state.x, gameObject.state.y, 1.0, 0x660000, 0.5);
+				//gameObject.state.right.scale(20).drawVector(this._dynamicGraphics, gameObject.state.x, gameObject.state.y, 1.0, 0x000066, 0.5);
+			//}
 		}
+		
+		public function get physics():Physics { return this._physics; }
 		
 		
 		

@@ -14,11 +14,14 @@ package tests.game {
 		public static var TANK:int = 0;
 		public static var GROUND:int = 1;
 		public static var BOX:int = 2;
+		public static var MISSILE:int = 3;
 		
 		private var _files:Vector.<String> = new <String>[
 			"https://dl.dropbox.com/u/29689693/tank.png",
 			"https://dl.dropbox.com/u/29689693/ground.jpg",
-			"https://dl.dropbox.com/u/29689693/box.jpg" ];
+			"https://dl.dropbox.com/u/29689693/box.jpg",
+			"https://dl.dropbox.com/u/29689693/missile.png"
+			];
 		
 		private var _bitmaps:Vector.<BitmapData> = new Vector.<BitmapData>();
 			

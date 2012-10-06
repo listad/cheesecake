@@ -1,4 +1,4 @@
-package engine.physics {
+﻿package engine.physics {
 	import engine.Component;
 	import engine.GameObject;
 	import engine.geometry.Matrix2D;
@@ -24,14 +24,18 @@ package engine.physics {
 		
 		public function set vector(value:Vector.<Number>):void {
 			this._vector = value;
+			rotation -= 2 * Math.PI * int(rotation / (2 * Math.PI)) ;//FIXME
 			
 			this._matrix.angle = this._vector[ANGLE_INDEX];
 			
+			
+
 		
 			
 			super.gameObject.x = x;//DEBUG;
 			super.gameObject.y = y;//DEBUG;
 			super.gameObject.rotation = rotation * Mathsolver.RAD_TO_DEG;//DEBUG;
+
 		}
 		
 	//	public function get length():int {

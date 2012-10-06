@@ -11,29 +11,29 @@ package engine.physics {
 		}
 		
 		public function circumAroundPolygon(globalVertices:Vector.<Vector2D>):void {
-			super._minX = Number.MAX_VALUE;
-			super._minY = Number.MAX_VALUE;
-			super._maxX = Number.MIN_VALUE;
-			super._maxY = Number.MIN_VALUE;
+			super._min_x = Number.MAX_VALUE;
+			super._min_y = Number.MAX_VALUE;
+			super._max_x = Number.MIN_VALUE;
+			super._max_y = Number.MIN_VALUE;
 			var length:int = globalVertices.length;
 			for (var i:int = 0; i < length; i++) {
 				var vertex:Vector2D = globalVertices[i];
-				if (vertex.x < super._minX) super._minX = vertex.x;
-				if (vertex.x > super._maxX) super._maxX = vertex.x;
-				if (vertex.y < super._minY) super._minY = vertex.y;
-				if (vertex.y > super._maxY) super._maxY = vertex.y;
+				if (vertex.x < super._min_x) super._min_x = vertex.x;
+				if (vertex.x > super._max_x) super._max_x = vertex.x;
+				if (vertex.y < super._min_y) super._min_y = vertex.y;
+				if (vertex.y > super._max_y) super._max_y = vertex.y;
 			}
 		}
 		
 		public function circumAroundCircle(x:Number, y:Number, radius:Number):void {
-			super._minX = Number.MAX_VALUE;
-			super._minY = Number.MAX_VALUE;
-			super._maxX = Number.MIN_VALUE;
-			super._maxY = Number.MIN_VALUE;
-			super._minX = x - radius;
-			super._maxX = x + radius;
-			super._minY = y - radius;
-			super._maxY = y + radius;
+			super._min_x = Number.MAX_VALUE;
+			super._min_y = Number.MAX_VALUE;
+			super._max_x = Number.MIN_VALUE;
+			super._max_y = Number.MIN_VALUE;
+			super._min_x = x - radius;
+			super._max_x = x + radius;
+			super._min_y = y - radius;
+			super._max_y = y + radius;
 		}
 		
 	}
